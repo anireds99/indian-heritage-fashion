@@ -36,13 +36,14 @@ class DevelopmentConfig(Config):
     """Development configuration."""
     DEBUG = True
     TESTING = False
+    SESSION_COOKIE_SECURE = False  # Allow non-HTTPS in development
 
 
 class ProductionConfig(Config):
     """Production configuration."""
     DEBUG = False
     TESTING = False
-    SESSION_COOKIE_SECURE = True
+    # SESSION_COOKIE_SECURE already set to True in base Config
 
 
 class TestingConfig(Config):
