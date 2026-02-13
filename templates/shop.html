@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Shop Heritage Fashion - ROOTS{% endblock %}
+
+{% block content %}
+<section class="page-header">
+    <div class="container">
+        <h1>Shop Collection</h1>
+        <p>Authentic pieces celebrating cultures from around the world</p>
+    </div>
+</section>
+
+<section class="shop-section">
+    <div class="container">
+        <div class="shop-filters">
+            <a href="/shop?category=all" class="filter-btn {% if category == 'all' %}active{% endif %}">All Pieces</a>
+            <a href="/shop?category=heritage" class="filter-btn {% if category == 'heritage' %}active{% endif %}">Heritage</a>
+            <a href="/shop?category=streetwear" class="filter-btn {% if category == 'streetwear' %}active{% endif %}">Street Culture</a>
+            <a href="/shop?category=accessories" class="filter-btn {% if category == 'accessories' %}active{% endif %}">Accessories</a>
+        </div>
+
+        <div class="product-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-badge">{{ product.culture }}</div>
+                <div class="product-image">
+                    <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}" onerror="this.src='https://via.placeholder.com/400x500?text={{ product.name|urlencode }}'">
+                    <div class="product-overlay">
+                        <a href="/product/{{ product.id }}" class="btn btn-secondary">View Story</a>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3>{{ product.name }}</h3>
+                    <p class="product-category">{{ product.category|title }}</p>
+                    <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if products|length == 0 %}
+        <div class="no-products">
+            <p>No products found in this category. Explore other collections!</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

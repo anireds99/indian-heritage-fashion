@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - ROOTS{% endblock %}
+
+{% block content %}
+<section class="product-detail">
+    <div class="container">
+        <div class="product-detail-grid">
+            <div class="product-detail-image">
+                <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}" onerror="this.src='https://via.placeholder.com/600x700?text={{ product.name|urlencode }}'">
+            </div>
+            <div class="product-detail-info">
+                <div class="culture-badge">{{ product.culture }} Heritage</div>
+                <h1>{{ product.name }}</h1>
+                <p class="product-category">{{ product.category|title }}</p>
+                <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                <p class="product-description">{{ product.description }}</p>
+                
+                <div class="product-story">
+                    <h3>📖 The Story</h3>
+                    <p>{{ product.story }}</p>
+                </div>
+                
+                <div class="product-options">
+                    <div class="option-group">
+                        <label>Size:</label>
+                        <select>
+                            <option>XS</option>
+                            <option>S</option>
+                            <option selected>M</option>
+                            <option>L</option>
+                            <option>XL</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label>Quantity:</label>
+                        <input type="number" value="1" min="1" max="10">
+                    </div>
+                </div>
+
+                <button class="btn btn-primary btn-large">Add to Cart</button>
+                <button class="btn btn-secondary btn-large">Save for Later</button>
+
+                <div class="product-details-list">
+                    <h3>✨ What Makes It Special</h3>
+                    <ul>
+                        <li><i class="fas fa-check"></i> Handcrafted by skilled artisans</li>
+                        <li><i class="fas fa-check"></i> Sustainable & ethically sourced materials</li>
+                        <li><i class="fas fa-check"></i> Fair trade certified production</li>
+                        <li><i class="fas fa-check"></i> Each purchase supports artisan communities</li>
+                        <li><i class="fas fa-check"></i> Free shipping on orders over $100</li>
+                        <li><i class="fas fa-check"></i> 30-day returns & exchanges</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

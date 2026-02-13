@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}ROOTS - Where Tradition Meets Street Style{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">Wear Your Roots</h1>
+        <p class="hero-subtitle">Celebrating Global Heritage • Empowering Artisans • Sustainable Fashion</p>
+        <a href="/shop" class="btn btn-primary">Explore Collection</a>
+    </div>
+</section>
+
+<section class="mission-banner">
+    <div class="container">
+        <h2>🌍 Fashion with Purpose</h2>
+        <p>Every piece in our collection connects you to ancient traditions, supports artisan communities, and celebrates the rich tapestry of global cultures.</p>
+    </div>
+</section>
+
+<section class="features">
+    <div class="container">
+        <div class="feature-grid">
+            <div class="feature-item">
+                <i class="fas fa-hands-helping"></i>
+                <h3>Artisan Made</h3>
+                <p>Direct partnerships with traditional craftspeople</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-leaf"></i>
+                <h3>Sustainable</h3>
+                <p>Eco-friendly materials & ethical production</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-heart"></i>
+                <h3>Cultural Impact</h3>
+                <p>Preserving heritage through fashion</p>
+            </div>
+            <div class="feature-item">
+                <i class="fas fa-recycle"></i>
+                <h3>Circular Fashion</h3>
+                <p>Upcycled & designed to last generations</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="featured-products">
+    <div class="container">
+        <h2 class="section-title">Heritage Collection</h2>
+        <p class="section-subtitle">Discover pieces that carry stories from around the world</p>
+        <div class="product-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-badge">{{ product.culture }}</div>
+                <div class="product-image">
+                    <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}" onerror="this.src='https://via.placeholder.com/400x500?text={{ product.name|urlencode }}'">
+                    <div class="product-overlay">
+                        <a href="/product/{{ product.id }}" class="btn btn-secondary">View Story</a>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3>{{ product.name }}</h3>
+                    <p class="product-category">{{ product.category|title }}</p>
+                    <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center">
+            <a href="/shop" class="btn btn-primary">View All Pieces</a>
+        </div>
+    </div>
+</section>
+
+<section class="culture-showcase">
+    <div class="container">
+        <h2 class="section-title">Cultures We Celebrate</h2>
+        <div class="culture-grid">
+            <div class="culture-card">
+                <div class="culture-icon">🇯🇵</div>
+                <h3>Japanese</h3>
+                <p>Indigo dyeing, sashiko, kimono</p>
+            </div>
+            <div class="culture-card">
+                <div class="culture-icon">🇬🇭</div>
+                <h3>African</h3>
+                <p>Kente, mudcloth, adinkra</p>
+            </div>
+            <div class="culture-card">
+                <div class="culture-icon">🇲🇽</div>
+                <h3>Mexican</h3>
+                <p>Embroidery, huipil, textiles</p>
+            </div>
+            <div class="culture-card">
+                <div class="culture-icon">🇮🇳</div>
+                <h3>Indian</h3>
+                <p>Block printing, ikat, handloom</p>
+            </div>
+            <div class="culture-card">
+                <div class="culture-icon">🇵🇪</div>
+                <h3>Peruvian</h3>
+                <p>Alpaca wool, traditional weaving</p>
+            </div>
+            <div class="culture-card">
+                <div class="culture-icon">🇮🇩</div>
+                <h3>Indonesian</h3>
+                <p>Batik, ikat, traditional dyes</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container">
+        <h2>Join the Movement</h2>
+        <p>Be part of a generation that values heritage, sustainability, and authentic stories</p>
+        <a href="/shop" class="btn btn-light">Start Your Journey</a>
+    </div>
+</section>
+{% endblock %}

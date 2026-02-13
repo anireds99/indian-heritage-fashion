@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Indian Heritage Collection - ROOTS{% endblock %}
+
+{% block content %}
+<section class="page-header indian-heritage-header">
+    <div class="container">
+        <h1>🇮🇳 Indian Heritage Collection</h1>
+        <p>Celebrating India's architectural wonders, space achievements, and timeless legacy</p>
+    </div>
+</section>
+
+<section class="heritage-intro">
+    <div class="container">
+        <div class="intro-content">
+            <h2>From Ancient Temples to Space Missions</h2>
+            <p>India's story spans millennia - from the majestic Dravidian temples of the Chola dynasty to ISRO's groundbreaking space missions. This collection celebrates the architectural marvels, engineering excellence, and cultural richness that define Bharat.</p>
+            <p>Each piece honors craftsmen, scientists, and visionaries who've shaped India's incredible journey from 1000 CE to the cosmos.</p>
+            <p><a href="/design-gallery" class="btn btn-secondary">View Design Details →</a></p>
+        </div>
+    </div>
+</section>
+
+<section class="indian-products-section">
+    <div class="container">
+        <h2 class="section-title">The Collection</h2>
+        
+        <div class="product-grid">
+            {% for product in products %}
+            <div class="product-card">
+                <div class="product-badge indian-badge">{{ product.culture }}</div>
+                <div class="product-image">
+                    <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}" onerror="this.src='https://via.placeholder.com/400x500?text={{ product.name|urlencode }}'">
+                    <div class="product-overlay">
+                        <a href="/product/{{ product.id }}" class="btn btn-secondary">Discover Story</a>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3>{{ product.name }}</h3>
+                    <p class="product-category">{{ product.category|title }}</p>
+                    <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<section class="heritage-highlights">
+    <div class="container">
+        <h2 class="section-title">Heritage Highlights</h2>
+        <div class="highlights-grid">
+            <div class="highlight-card">
+                <div class="highlight-icon">🛕</div>
+                <h3>Tanjore Brihadeeswara</h3>
+                <p>1010 CE UNESCO World Heritage Chola masterpiece</p>
+            </div>
+            <div class="highlight-card">
+                <div class="highlight-icon">🚀</div>
+                <h3>ISRO Missions</h3>
+                <p>Chandrayaan-3, Mangalyaan, Gaganyaan achievements</p>
+            </div>
+            <div class="highlight-card">
+                <div class="highlight-icon">🏛️</div>
+                <h3>Gateway of India</h3>
+                <p>1924 Indo-Saracenic architectural marvel</p>
+            </div>
+            <div class="highlight-card">
+                <div class="highlight-icon">🗿</div>
+                <h3>Hampi Ruins</h3>
+                <p>14th century Vijayanagara Empire UNESCO site</p>
+            </div>
+            <div class="highlight-card">
+                <div class="highlight-icon">👑</div>
+                <h3>Mysore Palace</h3>
+                <p>Royal Indo-Saracenic heritage with 100,000 lights</p>
+            </div>
+            <div class="highlight-card">
+                <div class="highlight-icon">☀️</div>
+                <h3>Konark Sun Temple</h3>
+                <p>13th century Kalinga architecture chariot temple</p>
+            </div>
+            <div class="highlight-card">
+                <div class="highlight-icon">🌸</div>
+                <h3>Lotus Temple</h3>
+                <p>1986 Bahá'í modern architectural symbol of unity</p>
+            </div>
+            <div class="highlight-card">
+                <div class="highlight-icon">🌈</div>
+                <h3>Meenakshi Temple</h3>
+                <p>2500 years of Tamil Dravidian gopuram artistry</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="indian-cta">
+    <div class="container">
+        <h2>Wear India's Story</h2>
+        <p>From ancient stone to modern space - celebrate 5000 years of innovation and culture</p>
+        <a href="/shop?category=all" class="btn btn-light">Explore All Collections</a>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,380 @@
+{% extends "base.html" %}
+
+{% block title %}Design Gallery - Indian Heritage Collection - ROOTS{% endblock %}
+
+{% block content %}
+<section class="page-header design-gallery-header">
+    <div class="container">
+        <h1>🎨 Design Gallery</h1>
+        <p>Behind the Designs: India's Architectural & Cultural Heritage</p>
+    </div>
+</section>
+
+<section class="gallery-intro">
+    <div class="container">
+        <div class="intro-content">
+            <h2>From Ancient Stones to Modern Threads</h2>
+            <p>Each design in our Indian Heritage Collection is meticulously researched and crafted to honor the monuments, achievements, and cultural landmarks that define India's incredible journey through time.</p>
+        </div>
+    </div>
+</section>
+
+<section class="design-details-section">
+    <div class="container">
+        
+        <!-- Tanjore Temple Design -->
+        <div class="design-detail-card">
+            <div class="design-image">
+                <img src="{{ url_for('static', filename='images/tanjore1.jpg') }}" alt="Tanjore Temple Design" onerror="this.src='https://via.placeholder.com/600x400?text=Tanjore+Temple'">
+            </div>
+            <div class="design-content">
+                <h2>🛕 Tanjore Brihadeeswara Temple</h2>
+                <span class="design-era">Built: 1010 CE | Chola Dynasty</span>
+                <p class="design-description">The Great Living Chola Temple stands as a testament to Dravidian architecture's golden age. Its 66-meter vimana (tower) was the tallest structure of its time, crowned with a single 80-ton granite capstone.</p>
+                <div class="design-highlights">
+                    <h4>Design Elements:</h4>
+                    <ul>
+                        <li>Intricate stone carvings depicting 108 Bharatanatyam dance poses</li>
+                        <li>Massive Nandi bull sculpture - one of India's largest monolithic statues</li>
+                        <li>Architectural innovation using interlocking stones (no binding material)</li>
+                        <li>UNESCO World Heritage Site since 1987</li>
+                    </ul>
+                </div>
+                <p class="design-story"><strong>Why This Design:</strong> Celebrating 1000+ years of engineering excellence and artistic mastery that continues to inspire architects worldwide.</p>
+            </div>
+        </div>
+
+        <!-- ISRO Design -->
+        <div class="design-detail-card reverse">
+            <div class="design-image">
+                <img src="{{ url_for('static', filename='images/isro1.jpg') }}" alt="ISRO Missions Design" onerror="this.src='https://via.placeholder.com/600x400?text=ISRO+Missions'">
+            </div>
+            <div class="design-content">
+                <h2>🚀 ISRO Space Missions</h2>
+                <span class="design-era">1969 - Present | India's Space Journey</span>
+                <p class="design-description">From humble beginnings with rocket components transported on bicycles to landing on the Moon's south pole, ISRO represents India's scientific ambition and cost-effective innovation.</p>
+                <div class="design-highlights">
+                    <h4>Mission Highlights:</h4>
+                    <ul>
+                        <li><strong>Chandrayaan-3 (2023):</strong> Historic soft landing on lunar south pole</li>
+                        <li><strong>Mangalyaan (2014):</strong> Mars orbit on first attempt - most cost-effective Mars mission</li>
+                        <li><strong>Gaganyaan:</strong> Upcoming human spaceflight program</li>
+                        <li><strong>104 Satellites (2017):</strong> World record single launch</li>
+                    </ul>
+                </div>
+                <p class="design-story"><strong>Why This Design:</strong> Honoring scientists who made space accessible through frugal innovation and inspiring millions to dream beyond Earth.</p>
+            </div>
+        </div>
+
+        <!-- Gateway of India -->
+        <div class="design-detail-card">
+            <div class="design-image">
+                <img src="{{ url_for('static', filename='images/gateway1.jpg') }}" alt="Gateway of India Design" onerror="this.src='https://via.placeholder.com/600x400?text=Gateway+of+India'">
+            </div>
+            <div class="design-content">
+                <h2>🏛️ Gateway of India</h2>
+                <span class="design-era">Built: 1924 | Mumbai</span>
+                <p class="design-description">Mumbai's iconic monument blends Indo-Saracenic architecture with yellow basalt and reinforced concrete. It commemorates King George V's 1911 visit and symbolizes the city's spirit.</p>
+                <div class="design-highlights">
+                    <h4>Architectural Features:</h4>
+                    <ul>
+                        <li>26-meter arch inspired by 16th-century Gujarat architecture</li>
+                        <li>Muslim architectural elements with Hindu and European styles</li>
+                        <li>Four turrets and intricate lattice work</li>
+                        <li>Ironically, site where last British troops departed India (1948)</li>
+                    </ul>
+                </div>
+                <p class="design-story"><strong>Why This Design:</strong> A symbol of colonial history transformed into an emblem of Mumbai's resilience and multicultural identity.</p>
+            </div>
+        </div>
+
+        <!-- Hampi Ruins -->
+        <div class="design-detail-card reverse">
+            <div class="design-image">
+                <img src="{{ url_for('static', filename='images/hampi1.jpg') }}" alt="Hampi Ruins Design" onerror="this.src='https://via.placeholder.com/600x400?text=Hampi+Ruins'">
+            </div>
+            <div class="design-content">
+                <h2>🗿 Hampi - Vijayanagara Ruins</h2>
+                <span class="design-era">14th-16th Century | Karnataka</span>
+                <p class="design-description">Once the world's second-largest medieval city, Hampi's 1,600 surviving monuments tell the story of the mighty Vijayanagara Empire amidst surreal boulder landscapes.</p>
+                <div class="design-highlights">
+                    <h4>Key Monuments:</h4>
+                    <ul>
+                        <li>Vittala Temple's musical pillars that produce musical notes when struck</li>
+                        <li>Stone Chariot - masterpiece of ancient stone carving</li>
+                        <li>Lotus Mahal and Elephant Stables showcasing Indo-Islamic architecture</li>
+                        <li>Advanced water management systems and aqueducts</li>
+                    </ul>
+                </div>
+                <p class="design-story"><strong>Why This Design:</strong> Capturing the mystical beauty of Karnataka's UNESCO site where nature and architecture merge in perfect harmony.</p>
+            </div>
+        </div>
+
+        <!-- Mysore Palace -->
+        <div class="design-detail-card">
+            <div class="design-image">
+                <img src="{{ url_for('static', filename='images/mysore1.jpg') }}" alt="Mysore Palace Design" onerror="this.src='https://via.placeholder.com/600x400?text=Mysore+Palace'">
+            </div>
+            <div class="design-content">
+                <h2>👑 Mysore Palace</h2>
+                <span class="design-era">Built: 1912 | Karnataka</span>
+                <p class="design-description">The Palace of Mysore blends Hindu, Rajput, Gothic, and Islamic styles. During Dussehra, 100,000 light bulbs illuminate this three-story stone structure, creating a spectacle visited by millions.</p>
+                <div class="design-highlights">
+                    <h4>Royal Features:</h4>
+                    <ul>
+                        <li>Durbar Hall with ornate ceiling and sculpted pillars</li>
+                        <li>Kalyana Mantapa (marriage pavilion) with stained glass ceiling</li>
+                        <li>Golden Howdah (elephant seat) weighing 750 kg</li>
+                        <li>India's second most visited monument after Taj Mahal</li>
+                    </ul>
+                </div>
+                <p class="design-story"><strong>Why This Design:</strong> Celebrating Karnataka's royal heritage and the artisans who preserve Mysore silk and sandalwood craft traditions.</p>
+            </div>
+        </div>
+
+        <!-- Konark Sun Temple -->
+        <div class="design-detail-card reverse">
+            <div class="design-image">
+                <img src="{{ url_for('static', filename='images/konark1.jpg') }}" alt="Konark Sun Temple Design" onerror="this.src='https://via.placeholder.com/600x400?text=Konark+Temple'">
+            </div>
+            <div class="design-content">
+                <h2>☀️ Konark Sun Temple</h2>
+                <span class="design-era">Built: 1250 CE | Odisha</span>
+                <p class="design-description">Designed as a colossal stone chariot with 24 intricately carved wheels pulled by seven horses, this Kalinga architecture masterpiece was dedicated to Surya, the Sun God.</p>
+                <div class="design-highlights">
+                    <h4>Astronomical Marvel:</h4>
+                    <ul>
+                        <li>24 wheels represent hours; 8 spokes represent 3-hour periods (praharas)</li>
+                        <li>Wheels functioned as sundials showing accurate time</li>
+                        <li>Erotic sculptures reflecting tantric traditions</li>
+                        <li>UNESCO World Heritage Site - "Black Pagoda" for sailors</li>
+                    </ul>
+                </div>
+                <p class="design-story"><strong>Why This Design:</strong> Where ancient astronomy meets spiritual artistry, representing India's scientific temper coded in stone.</p>
+            </div>
+        </div>
+
+        <!-- Lotus Temple -->
+        <div class="design-detail-card">
+            <div class="design-image">
+                <img src="{{ url_for('static', filename='images/lotus1.jpg') }}" alt="Lotus Temple Design" onerror="this.src='https://via.placeholder.com/600x400?text=Lotus+Temple'">
+            </div>
+            <div class="design-content">
+                <h2>🪷 Lotus Temple</h2>
+                <span class="design-era">Built: 1986 | New Delhi</span>
+                <p class="design-description">The Bahá'í House of Worship's 27 marble "petals" arranged in clusters of three symbolize unity of all religions. This modern architectural marvel welcomes people of all faiths.</p>
+                <div class="design-highlights">
+                    <h4>Modern Engineering:</h4>
+                    <ul>
+                        <li>27 free-standing marble-clad petals forming nine sides</li>
+                        <li>No religious imagery - pure geometric form</li>
+                        <li>Visited by over 100 million people since opening</li>
+                        <li>Winner of numerous architectural awards</li>
+                    </ul>
+                </div>
+                <p class="design-story"><strong>Why This Design:</strong> A symbol of India's secular values and contemporary architectural innovation recognized worldwide.</p>
+            </div>
+        </div>
+
+        <!-- Meenakshi Temple -->
+        <div class="design-detail-card reverse">
+            <div class="design-image">
+                <img src="{{ url_for('static', filename='images/meenakshi1.jpg') }}" alt="Meenakshi Temple Design" onerror="this.src='https://via.placeholder.com/600x400?text=Meenakshi+Temple'">
+            </div>
+            <div class="design-content">
+                <h2>🌈 Meenakshi Amman Temple</h2>
+                <span class="design-era">Ancient (6th Century BCE) | Tamil Nadu</span>
+                <p class="design-description">Madurai's rainbow-hued gopurams tower 45-52 meters high, adorned with thousands of colorful stucco figures of gods, goddesses, demons, and mythical creatures representing Tamil Nadu's Dravidian magnificence.</p>
+                <div class="design-highlights">
+                    <h4>Temple Complex:</h4>
+                    <ul>
+                        <li>14 gopurams with over 33,000 sculptures</li>
+                        <li>Hall of Thousand Pillars with intricate carvings</li>
+                        <li>Each pillar produces different musical note when struck</li>
+                        <li>Attracts 15,000 visitors daily, 25,000 on Fridays</li>
+                    </ul>
+                </div>
+                <p class="design-story"><strong>Why This Design:</strong> Celebrating the explosion of color and artistry that defines South Indian temple architecture and living Hindu traditions.</p>
+            </div>
+        </div>
+
+        <!-- Indian Railways -->
+        <div class="design-detail-card">
+            <div class="design-image">
+                <img src="{{ url_for('static', filename='images/railways1.jpg') }}" alt="Indian Railways Design" onerror="this.src='https://via.placeholder.com/600x400?text=Indian+Railways'">
+            </div>
+            <div class="design-content">
+                <h2>🚂 Indian Railways Heritage</h2>
+                <span class="design-era">Since 1853 | The Lifeline of India</span>
+                <p class="design-description">From the first train between Mumbai and Thane in 1853, Indian Railways has become the world's fourth-largest network, connecting 1.4 billion people across diverse landscapes.</p>
+                <div class="design-highlights">
+                    <h4>Railway Facts:</h4>
+                    <ul>
+                        <li>68,000+ km of track connecting 7,000+ stations</li>
+                        <li>Employs 1.2 million people - among world's largest employers</li>
+                        <li>Vintage locomotives like WP, WG steam engines</li>
+                        <li>Iconic trains: Rajdhani, Shatabdi, Palace on Wheels, Vande Bharat</li>
+                    </ul>
+                </div>
+                <p class="design-story"><strong>Why This Design:</strong> Honoring 170 years of connecting India's diversity - a democratic space where all classes travel together.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container">
+        <h2>Wear the Stories</h2>
+        <p>Each piece in our collection carries these rich narratives. Explore the full collection.</p>
+        <a href="/indian-heritage" class="btn btn-primary">Shop Indian Heritage Collection</a>
+    </div>
+</section>
+
+<style>
+.design-gallery-header {
+    background: linear-gradient(135deg, #FF9933 0%, #FFFFFF 50%, #138808 100%);
+    padding: 80px 20px 60px;
+    text-align: center;
+    color: #333;
+}
+
+.gallery-intro {
+    padding: 60px 20px;
+    background: #f9f9f9;
+    text-align: center;
+}
+
+.intro-content {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.design-details-section {
+    padding: 60px 20px;
+}
+
+.design-detail-card {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    margin-bottom: 80px;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+}
+
+.design-detail-card.reverse {
+    direction: rtl;
+}
+
+.design-detail-card.reverse > * {
+    direction: ltr;
+}
+
+.design-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.design-content {
+    padding: 40px;
+}
+
+.design-content h2 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 28px;
+}
+
+.design-era {
+    display: inline-block;
+    background: #FF9933;
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.design-description {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.design-highlights {
+    margin: 20px 0;
+}
+
+.design-highlights h4 {
+    color: #138808;
+    margin-bottom: 10px;
+}
+
+.design-highlights ul {
+    list-style: none;
+    padding: 0;
+}
+
+.design-highlights li {
+    padding: 8px 0;
+    padding-left: 25px;
+    position: relative;
+    color: #666;
+}
+
+.design-highlights li:before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: #FF9933;
+    font-weight: bold;
+}
+
+.design-story {
+    margin-top: 20px;
+    padding: 20px;
+    background: #f0f8ff;
+    border-left: 4px solid #138808;
+    font-style: italic;
+}
+
+.cta-section {
+    padding: 80px 20px;
+    background: linear-gradient(135deg, #138808, #FF9933);
+    text-align: center;
+    color: white;
+}
+
+.cta-section h2 {
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+.cta-section p {
+    font-size: 18px;
+    margin-bottom: 30px;
+}
+
+@media (max-width: 768px) {
+    .design-detail-card,
+    .design-detail-card.reverse {
+        grid-template-columns: 1fr;
+        direction: ltr;
+    }
+    
+    .design-content {
+        padding: 20px;
+    }
+    
+    .design-content h2 {
+        font-size: 24px;
+    }
+}
+</style>
+
+{% endblock %}
