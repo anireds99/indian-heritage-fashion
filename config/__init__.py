@@ -45,13 +45,17 @@ class ProductionConfig(Config):
     TESTING = False
     # SESSION_COOKIE_SECURE already set to True in base Config
     
-    # Custom domain configuration
-    SERVER_NAME = os.environ.get('SERVER_NAME', 'rootsfashion.in')
+    # Custom domain configuration - Support both root and www
+    # Don't set SERVER_NAME to allow both rootsfashion.in and www.rootsfashion.in
     PREFERRED_URL_SCHEME = 'https'
     
     # Security headers for production
-    SESSION_COOKIE_DOMAIN = '.rootsfashion.in'
+    # Use wildcard subdomain to support both root and www
+    SESSION_COOKIE_DOMAIN = os.environ.get('SESSION_COOKIE_DOMAIN', '.rootsfashion.in')
     SESSION_COOKIE_SAMESITE = 'Lax'
+    
+    # Force HTTPS
+    SESSION_COOKIE_SECURE = True
 
 
 class TestingConfig(Config):
