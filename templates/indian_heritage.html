@@ -32,13 +32,29 @@
                 <div class="product-image">
                     <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}" onerror="this.src='https://via.placeholder.com/400x500?text={{ product.name|urlencode }}'">
                     <div class="product-overlay">
-                        <a href="/product/{{ product.id }}" class="btn btn-secondary">Discover Story</a>
+                        <a href="/product/{{ product.id }}" class="btn btn-light">View Details</a>
+                        {% if current_user.is_authenticated %}
+                        <button onclick="addToCart({{ product.id }}, '{{ product.name }}', {{ product.price }}, '{{ product.image }}')" class="btn btn-primary" style="margin-top: 10px;">
+                            <i class="fas fa-shopping-cart"></i> Add to Cart
+                        </button>
+                        {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-primary" style="margin-top: 10px;">
+                            <i class="fas fa-sign-in-alt"></i> Login to Buy
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
                 <div class="product-info">
                     <h3>{{ product.name }}</h3>
                     <p class="product-category">{{ product.category|title }}</p>
                     <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                    {% if current_user.is_authenticated %}
+                    <button onclick="addToCart({{ product.id }}, '{{ product.name }}', {{ product.price }}, '{{ product.image }}')" class="btn btn-primary btn-large">
+                        Add to Cart
+                    </button>
+                    {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-large">Login to Buy</a>
+                    {% endif %}
                 </div>
             </div>
             {% endfor %}

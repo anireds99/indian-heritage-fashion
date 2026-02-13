@@ -82,6 +82,107 @@ document.querySelector('.mobile-menu-toggle')?.addEventListener('click', () => {
     navMenu.style.display = navMenu.style.display === 'flex' ? 'none' : 'flex';
 });
 
+// Add to Cart functionality
+async function addToCart(productId, productName, price, image) {
+    try {
+        const response = await fetch('/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                product_name: productName,
+                price: price,
+                product_image: image,
+                quantity: 1,
+                size: 'M'
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Update cart badge
+            updateCartBadge(data.cart_count);
+            
+            // Show success message
+            showNotification('✅ ' + productName + ' added to cart!', 'success');
+        } else {
+            showNotification('❌ ' + data.message, 'error');
+        }
+    } catch (error) {
+        showNotification('❌ Failed to add item to cart', 'error');
+        console.error('Error:', error);
+    }
+}
+
+// Update cart badge count
+function updateCartBadge(count) {
+    const badge = document.getElementById('cartBadge');
+    if (badge) {
+        badge.textContent = count;
+        if (count > 0) {
+            badge.classList.add('active');
+        } else {
+            badge.classList.remove('active');
+        }
+    }
+}
+
+// Load cart count on page load
+async function loadCartCount() {
+    try {
+        const response = await fetch('/cart/count');
+        const data = await response.json();
+        if (data.success) {
+            updateCartBadge(data.count);
+        }
+    } catch (error) {
+        console.error('Error loading cart count:', error);
+    }
+}
+
+// Show notification toast
+function showNotification(message, type = 'info') {
+    // Remove existing notification
+    const existing = document.querySelector('.notification-toast');
+    if (existing) {
+        existing.remove();
+    }
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification-toast ${type}`;
+    notification.textContent = message;
+    notification.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: ${type === 'success' ? '#d4edda' : '#f8d7da'};
+        color: ${type === 'success' ? '#155724' : '#721c24'};
+        padding: 15px 25px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        z-index: 10000;
+        animation: slideIn 0.3s ease-out;
+        font-weight: 600;
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+
+// Load cart count when page loads
+if (document.querySelector('.cart-icon')) {
+    loadCartCount();
+}
+
 // Smooth scrolling for anchor links
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
@@ -122,4 +223,30 @@ if ('IntersectionObserver' in window) {
     });
 }
 
-console.log('LUXE Fashion Website - Loaded Successfully');
+// Add CSS animation for notifications
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes slideIn {
+        from {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    @keyframes slideOut {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(400px);
+            opacity: 0;
+        }
+    }
+`;
+document.head.appendChild(style);
+
+console.log('ROOTS Fashion Website - Loaded Successfully');

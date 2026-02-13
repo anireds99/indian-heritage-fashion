@@ -23,29 +23,34 @@ def view_cart():
 @cart_bp.route('/add', methods=['POST'])
 @login_required
 def add_to_cart():
-    """Add item to cart."""
-    product_id = request.form.get('product_id', type=int)
-    product_name = request.form.get('product_name')
-    price = request.form.get('price', type=float)
-    product_image = request.form.get('product_image')
-    quantity = request.form.get('quantity', 1, type=int)
-    size = request.form.get('size', 'M')
+    """Add item to shopping cart."""
+    data = request.get_json()
     
     result = cart_service.add_to_cart(
-        session['user_id'],
-        product_id,
-        product_name,
-        price,
-        product_image,
-        quantity,
-        size
+        user_id=session['user_id'],
+        product_id=data.get('product_id'),
+        product_name=data.get('product_name'),
+        price=data.get('price'),
+        product_image=data.get('product_image'),
+        quantity=data.get('quantity', 1),
+        size=data.get('size', 'M')
     )
     
-    if request.is_json or request.form.get('ajax'):
-        return jsonify(result)
-    
-    flash(result['message'], 'success' if result['success'] else 'danger')
-    return redirect(request.referrer or url_for('shop'))
+    return jsonify(result)
+
+
+@cart_bp.route('/count')
+@login_required
+def cart_count():
+    """Get cart item count."""
+    try:
+        cart = cart_service.get_user_cart(session['user_id'])
+        return jsonify({
+            'success': True,
+            'count': cart.get_item_count()
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)})
 
 
 @cart_bp.route('/update/<int:item_id>', methods=['POST'])
