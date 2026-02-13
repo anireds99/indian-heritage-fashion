@@ -46,21 +46,38 @@ class AuthenticationService:
         Login user with email/username and password.
         Returns: {'success': bool, 'message': str, 'user': User (optional)}
         """
+        # Enhanced logging for debugging
+        import logging
+        logging.basicConfig(level=logging.INFO)
+        logger = logging.getLogger(__name__)
+        
+        logger.info(f"Login attempt - Identifier: {identifier}")
+        
         # Try to find user by email or username
         user = self.user_repo.find_by_email(identifier)
         if not user:
             user = self.user_repo.find_by_username(identifier)
         
         if not user:
-            return {'success': False, 'message': 'Invalid credentials'}
+            logger.warning(f"User not found: {identifier}")
+            return {'success': False, 'message': 'Invalid email/username or password. Please check your credentials.'}
+        
+        logger.info(f"User found: {user.username} (ID: {user.id})")
         
         if not user.is_active:
-            return {'success': False, 'message': 'Account is deactivated'}
+            logger.warning(f"Inactive user attempted login: {user.username}")
+            return {'success': False, 'message': 'Your account has been deactivated. Please contact support.'}
         
-        if not user.check_password(password):
-            return {'success': False, 'message': 'Invalid credentials'}
+        # Verify password
+        password_valid = user.check_password(password)
+        logger.info(f"Password verification result: {password_valid}")
+        
+        if not password_valid:
+            logger.warning(f"Invalid password for user: {user.username}")
+            return {'success': False, 'message': 'Invalid email/username or password. Please check your credentials.'}
         
         user.update_last_login()
+        logger.info(f"Login successful for user: {user.username}")
         
         return {
             'success': True,

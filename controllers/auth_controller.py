@@ -57,7 +57,16 @@ def login():
         password = request.form.get('password')
         remember = request.form.get('remember', False)
         
+        # Debug logging
+        import logging
+        logging.basicConfig(level=logging.INFO)
+        logger = logging.getLogger(__name__)
+        
+        logger.info(f"Login attempt for identifier: {identifier}")
+        
         result = auth_service.login_user(identifier, password)
+        
+        logger.info(f"Login result: {result['success']}, Message: {result['message']}")
         
         if result['success']:
             session['user_id'] = result['user'].id
