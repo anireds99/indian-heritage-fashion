@@ -28,7 +28,92 @@
             </ul>
             <div class="nav-icons">
                 <a href="#" title="Search"><i class="fas fa-search"></i></a>
-                <a href="#" title="Account"><i class="fas fa-user"></i></a>
+                
+                <!-- User Account Dropdown -->
+                <div class="user-dropdown">
+                    <a href="#" class="user-icon" title="Account">
+                        <i class="fas fa-user"></i>
+                        {% if current_user.is_authenticated %}
+                            <span class="user-badge"></span>
+                        {% endif %}
+                    </a>
+                    <div class="dropdown-menu">
+                        {% if current_user.is_authenticated %}
+                            <!-- Logged In User Menu -->
+                            <div class="dropdown-header">
+                                <i class="fas fa-user-circle"></i>
+                                <div>
+                                    <strong>{{ current_user.username }}</strong>
+                                    <span class="user-role">Customer</span>
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ url_for('user.dashboard') }}" class="dropdown-item">
+                                <i class="fas fa-tachometer-alt"></i> Dashboard
+                            </a>
+                            <a href="{{ url_for('user.profile') }}" class="dropdown-item">
+                                <i class="fas fa-user-edit"></i> My Profile
+                            </a>
+                            <a href="{{ url_for('user.orders') }}" class="dropdown-item">
+                                <i class="fas fa-shopping-cart"></i> My Orders
+                            </a>
+                            <a href="{{ url_for('user.addresses') }}" class="dropdown-item">
+                                <i class="fas fa-map-marker-alt"></i> Addresses
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ url_for('auth.logout') }}" class="dropdown-item logout">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        {% elif current_user.is_admin %}
+                            <!-- Logged In Admin Menu -->
+                            <div class="dropdown-header">
+                                <i class="fas fa-user-shield"></i>
+                                <div>
+                                    <strong>{{ current_user.username }}</strong>
+                                    <span class="user-role admin">Admin</span>
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ url_for('admin.dashboard') }}" class="dropdown-item">
+                                <i class="fas fa-tachometer-alt"></i> Admin Dashboard
+                            </a>
+                            <a href="{{ url_for('admin.users') }}" class="dropdown-item">
+                                <i class="fas fa-users"></i> Manage Users
+                            </a>
+                            <a href="{{ url_for('admin.orders') }}" class="dropdown-item">
+                                <i class="fas fa-box"></i> Manage Orders
+                            </a>
+                            <a href="{{ url_for('admin.settings') }}" class="dropdown-item">
+                                <i class="fas fa-cog"></i> Settings
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ url_for('auth.logout') }}" class="dropdown-item logout">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </a>
+                        {% else %}
+                            <!-- Guest User Menu -->
+                            <div class="dropdown-header">
+                                <i class="fas fa-user-circle"></i>
+                                <div>
+                                    <strong>Welcome!</strong>
+                                    <span class="user-role">Guest</span>
+                                </div>
+                            </div>
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ url_for('auth.login') }}" class="dropdown-item">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </a>
+                            <a href="{{ url_for('auth.register') }}" class="dropdown-item">
+                                <i class="fas fa-user-plus"></i> Create Account
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ url_for('auth.admin_login') }}" class="dropdown-item">
+                                <i class="fas fa-shield-alt"></i> Admin Login
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+                
                 <a href="#" title="Cart"><i class="fas fa-shopping-bag"></i></a>
             </div>
             <div class="mobile-menu-toggle">
