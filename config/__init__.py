@@ -44,6 +44,14 @@ class ProductionConfig(Config):
     DEBUG = False
     TESTING = False
     # SESSION_COOKIE_SECURE already set to True in base Config
+    
+    # Custom domain configuration
+    SERVER_NAME = os.environ.get('SERVER_NAME', 'rootsfashion.in')
+    PREFERRED_URL_SCHEME = 'https'
+    
+    # Security headers for production
+    SESSION_COOKIE_DOMAIN = '.rootsfashion.in'
+    SESSION_COOKIE_SAMESITE = 'Lax'
 
 
 class TestingConfig(Config):
