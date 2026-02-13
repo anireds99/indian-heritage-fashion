@@ -127,8 +127,8 @@ async function addToCartWithQty(productId, productName, price, image, qtyInputId
         return;
     }
     
-    if (quantity > 50) {
-        showNotification('❌ Maximum quantity is 50 per item', 'error');
+    if (quantity > 10) {
+        showNotification('❌ Maximum quantity is 10 per item (inventory limit)', 'error');
         return;
     }
     
@@ -155,10 +155,14 @@ async function addToCartWithQty(productId, productName, price, image, qtyInputId
             updateCartBadge(data.cart_count);
             
             // Show success message with quantity
-            showNotification('✅ ' + quantity + 'x ' + productName + ' added to cart!', 'success');
+            if (quantity === 1) {
+                showNotification('✅ ' + productName + ' added to cart!', 'success');
+            } else {
+                showNotification('✅ ' + quantity + 'x ' + productName + ' added to cart!', 'success');
+            }
             
-            // Reset quantity to 10
-            qtyInput.value = 10;
+            // Reset quantity to 1
+            qtyInput.value = 1;
         } else {
             showNotification('❌ ' + data.message, 'error');
         }
