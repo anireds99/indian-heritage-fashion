@@ -1,8 +1,37 @@
-from flask import Flask, render_template, request, jsonify
+"""
+Indian Heritage Fashion Brand - Main Application
+Professional e-commerce platform with authentication system.
+Following SOLID principles and best practices.
+"""
+from flask import Flask, render_template, request, jsonify, session
 from datetime import datetime, timezone
+import os
 
+# Import configuration
+from config import config
+
+# Import database
+from models import db
+
+# Import controllers
+from controllers.auth_controller import auth_bp
+from controllers.user_controller import user_bp
+from controllers.admin_controller import admin_bp
+
+# Create Flask app
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'your-secret-key-here'
+
+# Load configuration
+env = os.environ.get('FLASK_ENV', 'development')
+app.config.from_object(config[env])
+
+# Initialize database
+db.init_app(app)
+
+# Register blueprints
+app.register_blueprint(auth_bp)
+app.register_blueprint(user_bp)
+app.register_blueprint(admin_bp)
 
 # Indian Heritage Fashion Products
 PRODUCTS = [
@@ -161,6 +190,7 @@ PRODUCTS = [
 # Newsletter subscribers (in-memory storage)
 subscribers = []
 
+# Public routes
 @app.route('/')
 def home():
     featured_products = PRODUCTS[:6]
@@ -190,17 +220,16 @@ def about():
 def contact():
     return render_template('contact.html')
 
-# New route for Indian Heritage Collection
 @app.route('/indian-heritage')
 def indian_heritage():
     indian_products = [p for p in PRODUCTS if p['culture'] == 'Indian']
     return render_template('indian_heritage.html', products=indian_products)
 
-# New route for Design Gallery
 @app.route('/design-gallery')
 def design_gallery():
     return render_template('design_gallery.html')
 
+# API routes
 @app.route('/api/subscribe', methods=['POST'])
 def subscribe():
     data = request.get_json()
@@ -213,12 +242,47 @@ def subscribe():
 @app.route('/api/contact', methods=['POST'])
 def submit_contact():
     data = request.get_json()
-    # In a real application, you would save this to a database or send an email
     return jsonify({'success': True, 'message': 'Thank you for your message! We will get back to you soon.'})
 
+# Context processors
 @app.context_processor
 def inject_now():
     return {'now': datetime.now(timezone.utc)}
 
+@app.context_processor
+def inject_user():
+    """Inject current user into templates."""
+    user_info = {
+        'is_authenticated': 'user_id' in session,
+        'is_admin': 'admin_id' in session,
+        'username': session.get('username') or session.get('admin_username'),
+        'user_id': session.get('user_id'),
+        'admin_id': session.get('admin_id')
+    }
+    return {'current_user': user_info}
+
+# Database initialization
+def init_database():
+    """Initialize database tables."""
+    with app.app_context():
+        db.create_all()
+        print("✅ Database tables created successfully!")
+        
+        # Create default super admin if doesn't exist
+        from repositories import AdminRepository
+        if not AdminRepository.find_by_username('superadmin'):
+            AdminRepository.create(
+                email='admin@indianheritage.com',
+                username='superadmin',
+                password='Admin@123456',
+                full_name='Super Administrator',
+                role='super_admin'
+            )
+            print("✅ Default super admin created!")
+            print("   Username: superadmin")
+            print("   Password: Admin@123456")
+            print("   ⚠️  Please change this password immediately!")
+
 if __name__ == '__main__':
+    init_database()
     app.run(debug=True, host='0.0.0.0', port=5001)
