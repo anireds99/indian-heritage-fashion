@@ -190,3 +190,81 @@ class OrderItem(db.Model):
     
     def __repr__(self):
         return f'<OrderItem {self.product_name} x{self.quantity}>'
+
+
+class Cart(db.Model):
+    """Shopping cart model."""
+    
+    __tablename__ = 'carts'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    session_id = db.Column(db.String(100))  # For guest users
+    
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc),
+                          onupdate=lambda: datetime.now(timezone.utc))
+    
+    # Relationships
+    items = db.relationship('CartItem', backref='cart', lazy='dynamic', cascade='all, delete-orphan')
+    
+    def get_total(self) -> float:
+        """Calculate total cart amount."""
+        return sum(item.get_subtotal() for item in self.items)
+    
+    def get_item_count(self) -> int:
+        """Get total number of items in cart."""
+        return sum(item.quantity for item in self.items)
+    
+    def __repr__(self):
+        return f'<Cart {self.id}>'
+
+
+class CartItem(db.Model):
+    """Cart item model."""
+    
+    __tablename__ = 'cart_items'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    cart_id = db.Column(db.Integer, db.ForeignKey('carts.id'), nullable=False)
+    
+    product_id = db.Column(db.Integer, nullable=False)
+    product_name = db.Column(db.String(200), nullable=False)
+    product_image = db.Column(db.String(500))
+    price = db.Column(db.Float, nullable=False)
+    quantity = db.Column(db.Integer, nullable=False, default=1)
+    size = db.Column(db.String(10), default='M')
+    
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    
+    def get_subtotal(self) -> float:
+        """Calculate item subtotal."""
+        return self.price * self.quantity
+    
+    def __repr__(self):
+        return f'<CartItem {self.product_name} x{self.quantity}>'
+
+
+class Payment(db.Model):
+    """Payment transaction model."""
+    
+    __tablename__ = 'payments'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    order_id = db.Column(db.Integer, db.ForeignKey('orders.id'), nullable=False)
+    
+    payment_method = db.Column(db.String(20), nullable=False)  # cod, card, upi
+    payment_status = db.Column(db.String(20), default='pending')  # pending, completed, failed
+    
+    # Card payment details (encrypted in production)
+    transaction_id = db.Column(db.String(100))
+    card_last4 = db.Column(db.String(4))
+    
+    amount = db.Column(db.Float, nullable=False)
+    currency = db.Column(db.String(3), default='INR')
+    
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    completed_at = db.Column(db.DateTime)
+    
+    def __repr__(self):
+        return f'<Payment {self.id} - {self.payment_method}>'

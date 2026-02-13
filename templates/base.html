@@ -114,7 +114,17 @@
                     </div>
                 </div>
                 
-                <a href="#" title="Cart"><i class="fas fa-shopping-bag"></i></a>
+                <!-- Shopping Cart -->
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('cart.view_cart') }}" title="Shopping Cart" class="cart-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span class="cart-badge" id="cartBadge">0</span>
+                </a>
+                {% else %}
+                <a href="{{ url_for('auth.login') }}" title="Login to Shop" class="cart-icon">
+                    <i class="fas fa-shopping-bag"></i>
+                </a>
+                {% endif %}
             </div>
             <div class="mobile-menu-toggle">
                 <i class="fas fa-bars"></i>

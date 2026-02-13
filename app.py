@@ -17,6 +17,7 @@ from models import db
 from controllers.auth_controller import auth_bp
 from controllers.user_controller import user_bp
 from controllers.admin_controller import admin_bp
+from controllers.cart_controller import cart_bp
 
 # Create Flask app
 app = Flask(__name__)
@@ -32,6 +33,7 @@ db.init_app(app)
 app.register_blueprint(auth_bp)
 app.register_blueprint(user_bp)
 app.register_blueprint(admin_bp)
+app.register_blueprint(cart_bp)
 
 # Indian Heritage Fashion Products
 PRODUCTS = [

@@ -3,8 +3,8 @@ Service layer for business logic operations.
 Implements Service Pattern following SOLID principles.
 """
 from typing import Optional, Dict, Any
-from repositories import UserRepository, AdminRepository
-from models import User, Admin
+from repositories import UserRepository, AdminRepository, CartRepository, CartItemRepository, OrderRepository, PaymentRepository
+from models import User, Admin, Cart, Order, OrderItem, db
 
 
 class AuthenticationService:
@@ -212,3 +212,185 @@ class AdminService:
             return {'success': True, 'message': 'User activated successfully'}
         except Exception as e:
             return {'success': False, 'message': f'Activation failed: {str(e)}'}
+
+
+class CartService:
+    """Service for shopping cart operations."""
+    
+    def __init__(self):
+        self.cart_repo = CartRepository()
+        self.cart_item_repo = CartItemRepository()
+    
+    def get_user_cart(self, user_id: int) -> Cart:
+        """Get or create user's cart."""
+        return self.cart_repo.find_or_create_by_user(user_id)
+    
+    def add_to_cart(self, user_id: int, product_id: int, product_name: str, 
+                   price: float, product_image: str, quantity: int = 1, size: str = 'M') -> Dict[str, Any]:
+        """Add item to cart."""
+        try:
+            cart = self.get_user_cart(user_id)
+            self.cart_item_repo.add_item(
+                cart.id, product_id, product_name, price, 
+                product_image, quantity, size
+            )
+            return {
+                'success': True,
+                'message': 'Item added to cart',
+                'cart_count': cart.get_item_count()
+            }
+        except Exception as e:
+            return {'success': False, 'message': f'Failed to add item: {str(e)}'}
+    
+    def update_cart_item(self, item_id: int, quantity: int) -> Dict[str, Any]:
+        """Update cart item quantity."""
+        try:
+            cart_item = self.cart_item_repo.find_by_id(item_id)
+            if not cart_item:
+                return {'success': False, 'message': 'Cart item not found'}
+            
+            if quantity <= 0:
+                self.cart_item_repo.remove_item(cart_item)
+                return {'success': True, 'message': 'Item removed from cart'}
+            
+            self.cart_item_repo.update_quantity(cart_item, quantity)
+            return {'success': True, 'message': 'Cart updated'}
+        except Exception as e:
+            return {'success': False, 'message': f'Failed to update cart: {str(e)}'}
+    
+    def remove_from_cart(self, item_id: int) -> Dict[str, Any]:
+        """Remove item from cart."""
+        try:
+            cart_item = self.cart_item_repo.find_by_id(item_id)
+            if not cart_item:
+                return {'success': False, 'message': 'Cart item not found'}
+            
+            self.cart_item_repo.remove_item(cart_item)
+            return {'success': True, 'message': 'Item removed from cart'}
+        except Exception as e:
+            return {'success': False, 'message': f'Failed to remove item: {str(e)}'}
+    
+    def clear_cart(self, user_id: int) -> Dict[str, Any]:
+        """Clear all items from cart."""
+        try:
+            cart = self.get_user_cart(user_id)
+            self.cart_repo.clear_cart(cart)
+            return {'success': True, 'message': 'Cart cleared'}
+        except Exception as e:
+            return {'success': False, 'message': f'Failed to clear cart: {str(e)}'}
+
+
+class CheckoutService:
+    """Service for checkout and payment operations."""
+    
+    def __init__(self):
+        self.cart_repo = CartRepository()
+        self.order_repo = OrderRepository()
+        self.payment_repo = PaymentRepository()
+    
+    def create_order_from_cart(self, user_id: int, shipping_address_id: int, 
+                               payment_method: str, card_details: Dict = None) -> Dict[str, Any]:
+        """Create order from cart items."""
+        try:
+            # Get cart
+            cart = self.cart_repo.find_or_create_by_user(user_id)
+            
+            if not cart.items.count():
+                return {'success': False, 'message': 'Cart is empty'}
+            
+            # Calculate total
+            total_amount = cart.get_total()
+            
+            # Create order
+            order = self.order_repo.create(
+                user_id=user_id,
+                total_amount=total_amount,
+                shipping_address_id=shipping_address_id,
+                status='pending'
+            )
+            
+            # Create order items from cart
+            for cart_item in cart.items:
+                order_item = OrderItem(
+                    order_id=order.id,
+                    product_id=cart_item.product_id,
+                    product_name=cart_item.product_name,
+                    quantity=cart_item.quantity,
+                    price=cart_item.price,
+                    size=cart_item.size
+                )
+                db.session.add(order_item)
+            
+            # Create payment record
+            payment = self.payment_repo.create(
+                order_id=order.id,
+                payment_method=payment_method,
+                amount=total_amount
+            )
+            
+            # Process payment based on method
+            if payment_method == 'cod':
+                # COD - Order confirmed immediately
+                order.status = 'confirmed'
+                payment.payment_status = 'pending'  # Payment on delivery
+            elif payment_method == 'card':
+                # Simulate card payment processing
+                payment_result = self._process_card_payment(card_details, total_amount)
+                if payment_result['success']:
+                    payment.payment_status = 'completed'
+                    payment.transaction_id = payment_result['transaction_id']
+                    payment.card_last4 = card_details.get('card_number', '')[-4:]
+                    order.status = 'confirmed'
+                else:
+                    payment.payment_status = 'failed'
+                    order.status = 'cancelled'
+                    db.session.commit()
+                    return {
+                        'success': False,
+                        'message': 'Payment failed: ' + payment_result.get('message', 'Unknown error')
+                    }
+            
+            db.session.commit()
+            
+            # Clear cart after successful order
+            self.cart_repo.clear_cart(cart)
+            
+            return {
+                'success': True,
+                'message': 'Order placed successfully',
+                'order': order,
+                'order_number': order.order_number
+            }
+            
+        except Exception as e:
+            db.session.rollback()
+            return {'success': False, 'message': f'Order creation failed: {str(e)}'}
+    
+    def _process_card_payment(self, card_details: Dict, amount: float) -> Dict[str, Any]:
+        """
+        Process card payment (simplified simulation).
+        In production, integrate with payment gateway like Razorpay, Stripe, etc.
+        """
+        import secrets
+        
+        # Simulate payment processing
+        # In production, call actual payment gateway API
+        
+        card_number = card_details.get('card_number', '')
+        cvv = card_details.get('cvv', '')
+        
+        # Basic validation
+        if len(card_number.replace(' ', '')) != 16:
+            return {'success': False, 'message': 'Invalid card number'}
+        
+        if len(cvv) != 3:
+            return {'success': False, 'message': 'Invalid CVV'}
+        
+        # Simulate successful payment
+        transaction_id = f"TXN-{secrets.token_hex(8).upper()}"
+        
+        return {
+            'success': True,
+            'transaction_id': transaction_id,
+            'message': 'Payment successful'
+        }

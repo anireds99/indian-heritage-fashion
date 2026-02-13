@@ -3,7 +3,7 @@ Repository layer for data access operations.
 Implements Repository Pattern following SOLID principles.
 """
 from typing import Optional, List
-from models import db, User, Admin, Order, Address
+from models import db, User, Admin, Order, Address, Cart, CartItem, Payment
 
 
 class UserRepository:
@@ -202,3 +202,117 @@ class AddressRepository:
         """Delete an address."""
         db.session.delete(address)
         db.session.commit()
+
+
+class CartRepository:
+    """Repository for Cart data access operations."""
+    
+    @staticmethod
+    def find_or_create_by_user(user_id: int) -> Cart:
+        """Find or create cart for user."""
+        cart = Cart.query.filter_by(user_id=user_id).first()
+        if not cart:
+            cart = Cart(user_id=user_id)
+            db.session.add(cart)
+            db.session.commit()
+        return cart
+    
+    @staticmethod
+    def find_by_id(cart_id: int) -> Optional[Cart]:
+        """Find cart by ID."""
+        return Cart.query.get(cart_id)
+    
+    @staticmethod
+    def clear_cart(cart: Cart) -> None:
+        """Clear all items from cart."""
+        CartItem.query.filter_by(cart_id=cart.id).delete()
+        db.session.commit()
+    
+    @staticmethod
+    def delete_cart(cart: Cart) -> None:
+        """Delete cart."""
+        db.session.delete(cart)
+        db.session.commit()
+
+
+class CartItemRepository:
+    """Repository for CartItem data access operations."""
+    
+    @staticmethod
+    def add_item(cart_id: int, product_id: int, product_name: str, price: float, 
+                 product_image: str, quantity: int = 1, size: str = 'M') -> CartItem:
+        """Add item to cart or update quantity if exists."""
+        # Check if item already exists
+        cart_item = CartItem.query.filter_by(
+            cart_id=cart_id, 
+            product_id=product_id, 
+            size=size
+        ).first()
+        
+        if cart_item:
+            cart_item.quantity += quantity
+        else:
+            cart_item = CartItem(
+                cart_id=cart_id,
+                product_id=product_id,
+                product_name=product_name,
+                product_image=product_image,
+                price=price,
+                quantity=quantity,
+                size=size
+            )
+            db.session.add(cart_item)
+        
+        db.session.commit()
+        return cart_item
+    
+    @staticmethod
+    def update_quantity(cart_item: CartItem, quantity: int) -> CartItem:
+        """Update cart item quantity."""
+        cart_item.quantity = quantity
+        db.session.commit()
+        return cart_item
+    
+    @staticmethod
+    def remove_item(cart_item: CartItem) -> None:
+        """Remove item from cart."""
+        db.session.delete(cart_item)
+        db.session.commit()
+    
+    @staticmethod
+    def find_by_id(item_id: int) -> Optional[CartItem]:
+        """Find cart item by ID."""
+        return CartItem.query.get(item_id)
+
+
+class PaymentRepository:
+    """Repository for Payment data access operations."""
+    
+    @staticmethod
+    def create(order_id: int, payment_method: str, amount: float, **kwargs) -> Payment:
+        """Create a new payment."""
+        payment = Payment(
+            order_id=order_id,
+            payment_method=payment_method,
+            amount=amount,
+            **kwargs
+        )
+        db.session.add(payment)
+        db.session.commit()
+        return payment
+    
+    @staticmethod
+    def find_by_order(order_id: int) -> Optional[Payment]:
+        """Find payment by order ID."""
+        return Payment.query.filter_by(order_id=order_id).first()
+    
+    @staticmethod
+    def update_status(payment: Payment, status: str, transaction_id: str = None) -> Payment:
+        """Update payment status."""
+        payment.payment_status = status
+        if transaction_id:
+            payment.transaction_id = transaction_id
+        if status == 'completed':
+            payment.completed_at = db.func.now()
+        db.session.commit()
+        return payment
