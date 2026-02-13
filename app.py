@@ -3,7 +3,7 @@ Indian Heritage Fashion Brand - Main Application
 Professional e-commerce platform with authentication system.
 Following SOLID principles and best practices.
 """
-from flask import Flask, render_template, request, jsonify, session
+from flask import Flask, render_template, request, jsonify, session, redirect
 from datetime import datetime, timezone
 import os
 
@@ -28,6 +28,17 @@ app.config.from_object(config[env])
 
 # Initialize database
 db.init_app(app)
+
+# Middleware to redirect old domain to new custom domain
+@app.before_request
+def redirect_to_custom_domain():
+    """Redirect indian-heritage-fashion.onrender.com to www.rootsfashion.in"""
+    if env == 'production':
+        urlparts = request.url.split('/')
+        if 'indian-heritage-fashion.onrender.com' in request.url:
+            # Replace old domain with new custom domain
+            new_url = request.url.replace('indian-heritage-fashion.onrender.com', 'www.rootsfashion.in')
+            return redirect(new_url, code=301)  # 301 = Permanent redirect
 
 # Register blueprints
 app.register_blueprint(auth_bp)
