@@ -117,6 +117,57 @@ async function addToCart(productId, productName, price, image) {
     }
 }
 
+// Add to Cart with custom quantity
+async function addToCartWithQty(productId, productName, price, image, qtyInputId) {
+    const qtyInput = document.getElementById(qtyInputId);
+    const quantity = parseInt(qtyInput.value) || 1;
+    
+    if (quantity < 1) {
+        showNotification('❌ Quantity must be at least 1', 'error');
+        return;
+    }
+    
+    if (quantity > 50) {
+        showNotification('❌ Maximum quantity is 50 per item', 'error');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                product_id: productId,
+                product_name: productName,
+                price: price,
+                product_image: image,
+                quantity: quantity,
+                size: 'M'
+            })
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            // Update cart badge
+            updateCartBadge(data.cart_count);
+            
+            // Show success message with quantity
+            showNotification('✅ ' + quantity + 'x ' + productName + ' added to cart!', 'success');
+            
+            // Reset quantity to 10
+            qtyInput.value = 10;
+        } else {
+            showNotification('❌ ' + data.message, 'error');
+        }
+    } catch (error) {
+        showNotification('❌ Failed to add item to cart', 'error');
+        console.error('Error:', error);
+    }
+}
+
 // Update cart badge count
 function updateCartBadge(count) {
     const badge = document.getElementById('cartBadge');
@@ -194,15 +245,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             });
         }
     });
-});
-
-// Add to cart functionality (placeholder)
-document.querySelectorAll('.btn-primary')?.forEach(button => {
-    if (button.textContent.includes('Add to Cart')) {
-        button.addEventListener('click', () => {
-            alert('Item added to cart! (This is a demo - shopping cart functionality would be implemented in a full version)');
-        });
-    }
 });
 
 // Image lazy loading
