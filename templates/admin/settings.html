@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Settings{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>Admin Settings</h1>
+        <p>Manage your admin account settings</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="settings-container">
+        <div class="settings-section">
+            <h3>Account Information</h3>
+            <div class="info-group">
+                <label>Username:</label>
+                <p>{{ admin.username }}</p>
+            </div>
+            <div class="info-group">
+                <label>Email:</label>
+                <p>{{ admin.email }}</p>
+            </div>
+            <div class="info-group">
+                <label>Full Name:</label>
+                <p>{{ admin.full_name or 'Not set' }}</p>
+            </div>
+            <div class="info-group">
+                <label>Role:</label>
+                <p>
+                    <span class="badge {% if admin.role == 'super_admin' %}badge-danger{% else %}badge-info{% endif %}">
+                        {{ admin.role.upper().replace('_', ' ') }}
+                    </span>
+                </p>
+            </div>
+            <div class="info-group">
+                <label>Status:</label>
+                <p>
+                    {% if admin.is_active %}
+                        <span class="badge badge-success">Active</span>
+                    {% else %}
+                        <span class="badge badge-danger">Inactive</span>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="info-group">
+                <label>Last Login:</label>
+                <p>{{ admin.last_login.strftime('%Y-%m-%d %H:%M:%S') if admin.last_login else 'Never' }}</p>
+            </div>
+            <div class="info-group">
+                <label>Account Created:</label>
+                <p>{{ admin.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+            </div>
+        </div>
+
+        <div class="settings-section">
+            <h3>Quick Links</h3>
+            <ul class="quick-links">
+                <li><a href="{{ url_for('admin.dashboard') }}">← Back to Dashboard</a></li>
+                <li><a href="{{ url_for('admin.users') }}">View All Users</a></li>
+                <li><a href="{{ url_for('admin.orders') }}">View All Orders</a></li>
+                {% if admin.is_super_admin() %}
+                    <li><a href="{{ url_for('admin.admins') }}">Manage Admins</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<style>
+    .settings-container {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 20px;
+    }
+
+    .settings-section {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #eee;
+    }
+
+    .settings-section h3 {
+        margin-top: 0;
+        margin-bottom: 15px;
+        color: #333;
+    }
+
+    .info-group {
+        margin-bottom: 15px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .info-group:last-child {
+        border-bottom: none;
+    }
+
+    .info-group label {
+        display: block;
+        font-weight: 600;
+        color: #666;
+        margin-bottom: 5px;
+    }
+
+    .info-group p {
+        margin: 0;
+        color: #333;
+    }
+
+    .quick-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .quick-links li {
+        margin-bottom: 10px;
+    }
+
+    .quick-links a {
+        display: block;
+        padding: 10px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        text-decoration: none;
+        color: #007bff;
+        transition: all 0.3s;
+    }
+
+    .quick-links a:hover {
+        background: #007bff;
+        color: white;
+    }
+
+    .badge-info {
+        background: #d1ecf1;
+        color: #0c5460;
+    }
+
+    .badge-danger {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .badge-success {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    @media (max-width: 768px) {
+        .settings-container {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

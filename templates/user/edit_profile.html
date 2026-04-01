@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile - User Dashboard{% endblock %}
+
+{% block content %}
+<div class="user-container">
+    <div class="user-header">
+        <h1>Edit Profile</h1>
+        <p>Update your profile information</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="profile-form-container">
+        <form method="POST" class="profile-form">
+            <div class="form-group">
+                <label for="first_name">First Name:</label>
+                <input type="text" id="first_name" name="first_name" value="{{ user.first_name or '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="last_name">Last Name:</label>
+                <input type="text" id="last_name" name="last_name" value="{{ user.last_name or '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number:</label>
+                <input type="tel" id="phone" name="phone" value="{{ user.phone or '' }}" placeholder="+91 98765 43210">
+            </div>
+
+            <div class="form-group">
+                <label>Email (Cannot be changed):</label>
+                <input type="email" value="{{ user.email }}" disabled>
+                <small>Contact support to change your email address</small>
+            </div>
+
+            <div class="form-group">
+                <label>Username (Cannot be changed):</label>
+                <input type="text" value="{{ user.username }}" disabled>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="{{ url_for('user.profile') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .user-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .user-header {
+        margin-bottom: 30px;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 15px;
+    }
+
+    .user-header h1 {
+        margin: 0;
+        font-size: 28px;
+        color: #333;
+    }
+
+    .profile-form-container {
+        background: #f9f9f9;
+        padding: 25px;
+        border-radius: 8px;
+        border: 1px solid #eee;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+
+    .form-group input:disabled {
+        background: #e9e9e9;
+        cursor: not-allowed;
+    }
+
+    .form-group small {
+        display: block;
+        margin-top: 5px;
+        color: #666;
+        font-size: 12px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .btn-primary {
+        background: #007bff;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #0056b3;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+</style>
+{% endblock %}

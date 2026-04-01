@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Orders - Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>Order Management</h1>
+        <p>View and manage all customer orders</p>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="filter-section">
+        <label>Filter by Status:</label>
+        <a href="{{ url_for('admin.orders', status='all') }}" class="filter-btn {% if status_filter == 'all' %}active{% endif %}">All</a>
+        <a href="{{ url_for('admin.orders', status='pending') }}" class="filter-btn {% if status_filter == 'pending' %}active{% endif %}">Pending</a>
+        <a href="{{ url_for('admin.orders', status='confirmed') }}" class="filter-btn {% if status_filter == 'confirmed' %}active{% endif %}">Confirmed</a>
+        <a href="{{ url_for('admin.orders', status='shipped') }}" class="filter-btn {% if status_filter == 'shipped' %}active{% endif %}">Shipped</a>
+        <a href="{{ url_for('admin.orders', status='delivered') }}" class="filter-btn {% if status_filter == 'delivered' %}active{% endif %}">Delivered</a>
+        <a href="{{ url_for('admin.orders', status='cancelled') }}" class="filter-btn {% if status_filter == 'cancelled' %}active{% endif %}">Cancelled</a>
+    </div>
+
+    <div class="orders-table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Order #</th>
+                    <th>Customer</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if orders.items %}
+                    {% for order in orders.items %}
+                        <tr>
+                            <td><strong>{{ order.order_number }}</strong></td>
+                            <td>{{ order.user.username }}</td>
+                            <td>₹{{ "%.2f"|format(order.total_amount) }}</td>
+                            <td>
+                                <span class="badge badge-{{ order.status }}">{{ order.status.upper() }}</span>
+                            </td>
+                            <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                <a href="{{ url_for('admin.order_detail', order_id=order.id) }}" class="btn-sm btn-info">View</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">No orders found</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="pagination">
+        {% if orders.has_prev %}
+            <a href="{{ url_for('admin.orders', page=orders.prev_num, status=status_filter) }}" class="btn-sm">← Previous</a>
+        {% endif %}
+        
+        <span class="page-info">Page {{ orders.page }} of {{ orders.pages }}</span>
+        
+        {% if orders.has_next %}
+            <a href="{{ url_for('admin.orders', page=orders.next_num, status=status_filter) }}" class="btn-sm">Next →</a>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .filter-section {
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #f9f9f9;
+        border-radius: 8px;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        padding: 8px 12px;
+        border: 2px solid #ddd;
+        border-radius: 4px;
+        text-decoration: none;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .filter-btn.active {
+        background: #007bff;
+        color: white;
+        border-color: #007bff;
+    }
+
+    .badge-pending { background: #fff3cd; color: #856404; }
+    .badge-confirmed { background: #d1ecf1; color: #0c5460; }
+    .badge-shipped { background: #cce5ff; color: #004085; }
+    .badge-delivered { background: #d4edda; color: #155724; }
+    .badge-cancelled { background: #f8d7da; color: #721c24; }
+</style>
+{% endblock %}

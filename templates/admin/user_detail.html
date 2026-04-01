@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}User Details - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <h1><i class="fas fa-user-circle"></i> User Details</h1>
+        <a href="{{ url_for('admin.users') }}" class="btn btn-secondary">← Back to Users</a>
+    </div>
+
+    <div class="admin-content">
+        <div class="user-details-grid">
+            <div class="detail-card">
+                <h3>Personal Information</h3>
+                <div class="detail-row">
+                    <label>User ID:</label>
+                    <span>#{{ user.id }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Username:</label>
+                    <span>{{ user.username }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Email:</label>
+                    <span>{{ user.email }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Name:</label>
+                    <span>{{ user.first_name }} {{ user.last_name }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Phone:</label>
+                    <span>{{ user.phone or 'Not provided' }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Status:</label>
+                    <span>
+                        {% if user.is_active %}
+                            <span class="badge badge-success">Active</span>
+                        {% else %}
+                            <span class="badge badge-danger">Inactive</span>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <label>Email Verified:</label>
+                    <span>
+                        {% if user.is_verified %}
+                            <i class="fas fa-check text-success"></i> Yes
+                        {% else %}
+                            <i class="fas fa-times text-danger"></i> No
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <div class="detail-card">
+                <h3>Account Dates</h3>
+                <div class="detail-row">
+                    <label>Joined:</label>
+                    <span>{{ user.created_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                </div>
+                <div class="detail-row">
+                    <label>Last Login:</label>
+                    <span>
+                        {% if user.last_login %}
+                            {{ user.last_login.strftime('%B %d, %Y at %I:%M %p') }}
+                        {% else %}
+                            Never
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="detail-row">
+                    <label>Last Updated:</label>
+                    <span>{{ user.updated_at.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                </div>
+
+                <h3 style="margin-top: 20px;">Actions</h3>
+                {% if user.is_active %}
+                    <form method="POST" action="{{ url_for('admin.deactivate_user', user_id=user.id) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-danger" onclick="return confirm('Deactivate this user?')">Deactivate User</button>
+                    </form>
+                {% else %}
+                    <form method="POST" action="{{ url_for('admin.activate_user', user_id=user.id) }}" style="display:inline;">
+                        <button type="submit" class="btn btn-success">Activate User</button>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="detail-card full-width">
+            <h3>Recent Orders</h3>
+            {% if orders %}
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Order Number</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td><strong>{{ order.order_number }}</strong></td>
+                        <td>₹{{ "%.2f"|format(order.total_amount) }}</td>
+                        <td>
+                            <span class="badge badge-{{ 'success' if order.status == 'delivered' else 'info' if order.status == 'shipped' else 'warning' if order.status == 'confirmed' else 'secondary' }}">
+                                {{ order.status|upper }}
+                            </span>
+                        </td>
+                        <td>{{ order.created_at.strftime('%b %d, %Y') }}</td>
+                        <td>
+                            <a href="{{ url_for('admin.order_detail', order_id=order.id) }}" class="btn btn-sm btn-info">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No orders yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

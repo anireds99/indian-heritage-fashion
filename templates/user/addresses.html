@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Addresses - User Dashboard{% endblock %}
+
+{% block content %}
+<div class="user-container">
+    <div class="user-header">
+        <h1>Shipping Addresses</h1>
+        <p>Manage your delivery addresses</p>
+        <a href="{{ url_for('user.add_address') }}" class="btn btn-primary">+ Add New Address</a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if addresses %}
+        <div class="addresses-grid">
+            {% for address in addresses %}
+                <div class="address-card">
+                    <div class="address-header">
+                        <h3>{{ address.full_name }}</h3>
+                        {% if address.is_default %}
+                            <span class="badge badge-primary">Default</span>
+                        {% endif %}
+                    </div>
+                    <div class="address-details">
+                        <p><strong>Phone:</strong> {{ address.phone }}</p>
+                        <p><strong>Address:</strong> {{ address.address_line1 }}</p>
+                        {% if address.address_line2 %}
+                            <p>{{ address.address_line2 }}</p>
+                        {% endif %}
+                        <p>{{ address.city }}, {{ address.state }} {{ address.postal_code }}</p>
+                        <p>{{ address.country }}</p>
+                    </div>
+                    <div class="address-actions">
+                        <a href="{{ url_for('user.edit_address', address_id=address.id) }}" class="btn-sm btn-info">Edit</a>
+                        <a href="{{ url_for('user.delete_address', address_id=address.id) }}" class="btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <p>No addresses saved yet</p>
+            <a href="{{ url_for('user.add_address') }}" class="btn btn-primary">Add Your First Address</a>
+        </div>
+    {% endif %}
+</div>
+
+<style>
+    .user-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px;
+    }
+
+    .user-header {
+        margin-bottom: 30px;
+        border-bottom: 2px solid #ddd;
+        padding-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .user-header h1 {
+        margin: 0;
+        font-size: 28px;
+        color: #333;
+    }
+
+    .addresses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+    }
+
+    .address-card {
+        background: #f9f9f9;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        padding: 20px;
+        transition: all 0.3s;
+    }
+
+    .address-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .address-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+    }
+
+    .address-header h3 {
+        margin: 0;
+        color: #333;
+    }
+
+    .badge-primary {
+        background: #007bff;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .address-details {
+        margin-bottom: 15px;
+    }
+
+    .address-details p {
+        margin: 8px 0;
+        color: #555;
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .address-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .btn-sm {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .btn-info {
+        background: #17a2b8;
+        color: white;
+    }
+
+    .btn-info:hover {
+        background: #138496;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+        background: #007bff;
+        color: white;
+    }
+
+    .btn:hover {
+        background: #0056b3;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 50px 20px;
+        background: #f9f9f9;
+        border-radius: 8px;
+    }
+
+    .empty-state p {
+        font-size: 18px;
+        color: #666;
+        margin-bottom: 20px;
+    }
+</style>
+{% endblock %}

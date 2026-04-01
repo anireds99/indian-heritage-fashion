@@ -1,0 +1,239 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout - Indian Heritage Fashion{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1200px; margin: 80px auto; padding: 40px 20px;">
+    <h1 style="margin-bottom: 40px; color: #333;">Checkout</h1>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div style="padding: 15px; margin-bottom: 20px; border-radius: 5px; background: {% if category == 'success' %}#d4edda{% elif category == 'danger' %}#f8d7da{% else %}#fff3cd{% endif %}; color: {% if category == 'success' %}#155724{% elif category == 'danger' %}#721c24{% else %}#856404{% endif %}; border-left: 4px solid {% if category == 'success' %}#28a745{% elif category == 'danger' %}#dc3545{% else %}#ffc107{% endif %};">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <form method="POST" action="{{ url_for('cart.process_checkout') }}" style="display: grid; grid-template-columns: 1fr 350px; gap: 40px;">
+        <!-- Checkout Form -->
+        <div>
+            <!-- Shipping Address Section -->
+            <div style="background: white; padding: 30px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h3 style="margin-top: 0; margin-bottom: 20px; color: #333; border-bottom: 2px solid #dee2e6; padding-bottom: 15px;">
+                    📍 Shipping Address
+                </h3>
+                
+                {% if addresses %}
+                    <div style="margin-bottom: 20px;">
+                        <p style="color: #666; margin-bottom: 15px; font-size: 14px;">Select an address or <a href="{{ url_for('user.add_address') }}" style="color: #8B4513; text-decoration: none; font-weight: 600;">add a new one</a></p>
+                        
+                        <div style="display: grid; gap: 12px;">
+                            {% for address in addresses %}
+                            <label style="display: flex; align-items: flex-start; padding: 15px; border: 2px solid #dee2e6; border-radius: 5px; cursor: pointer; transition: all 0.2s;">
+                                <input type="radio" name="address_id" value="{{ address.id }}" required 
+                                       {% if loop.first %}checked{% endif %}
+                                       style="margin-top: 4px; margin-right: 12px; cursor: pointer;">
+                                <div>
+                                    <h4 style="margin: 0 0 5px 0; color: #333;">{{ address.full_name }}</h4>
+                                    <p style="margin: 5px 0; color: #666; font-size: 14px;">
+                                        {{ address.address_line1 }}
+                                        {% if address.address_line2 %}, {{ address.address_line2 }}{% endif %}
+                                    </p>
+                                    <p style="margin: 5px 0; color: #666; font-size: 14px;">
+                                        {{ address.city }}, {{ address.state }} {{ address.postal_code }}
+                                    </p>
+                                    <p style="margin: 5px 0; color: #666; font-size: 14px;">
+                                        Phone: {{ address.phone }}
+                                    </p>
+                                    {% if address.is_default %}
+                                    <span style="display: inline-block; margin-top: 8px; padding: 3px 8px; background: #28a745; color: white; border-radius: 3px; font-size: 12px; font-weight: 600;">Default</span>
+                                    {% endif %}
+                                </div>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% else %}
+                    <div style="padding: 20px; background: #fff3cd; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #ffc107;">
+                        <p style="margin: 0; color: #856404;">
+                            <strong>No addresses found.</strong> Please <a href="{{ url_for('user.add_address') }}" style="color: #8B4513; font-weight: 600; text-decoration: none;">add a shipping address</a> before checkout.
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Payment Method Section -->
+            <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h3 style="margin-top: 0; margin-bottom: 20px; color: #333; border-bottom: 2px solid #dee2e6; padding-bottom: 15px;">
+                    💳 Payment Method
+                </h3>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; padding: 15px; border: 2px solid #dee2e6; border-radius: 5px; cursor: pointer; margin-bottom: 12px; transition: all 0.2s;">
+                        <input type="radio" name="payment_method" value="cod" required checked 
+                               style="margin-right: 12px; cursor: pointer;">
+                        <div>
+                            <h4 style="margin: 0; color: #333; font-weight: 600;">Cash on Delivery (COD)</h4>
+                            <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">Pay when your order arrives</p>
+                        </div>
+                    </label>
+                    
+                    <label style="display: flex; align-items: center; padding: 15px; border: 2px solid #dee2e6; border-radius: 5px; cursor: pointer; transition: all 0.2s;" onclick="toggleCardFields()">
+                        <input type="radio" name="payment_method" value="card" 
+                               style="margin-right: 12px; cursor: pointer;">
+                        <div>
+                            <h4 style="margin: 0; color: #333; font-weight: 600;">Credit/Debit Card</h4>
+                            <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">Fast and secure payment</p>
+                        </div>
+                    </label>
+                </div>
+                
+                <!-- Card Details (Hidden by default) -->
+                <div id="cardFields" style="display: none; margin-top: 20px; padding: 20px; background: #f8f9fa; border-radius: 5px;">
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; color: #555; font-weight: 600;">Cardholder Name</label>
+                        <input type="text" name="card_name" 
+                               style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="display: block; margin-bottom: 5px; color: #555; font-weight: 600;">Card Number</label>
+                        <input type="text" name="card_number" placeholder="1234 5678 9012 3456" 
+                               style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; color: #555; font-weight: 600;">Expiry Month</label>
+                            <select name="expiry_month" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px;">
+                                <option value="">Select Month</option>
+                                {% for month in range(1, 13) %}
+                                <option value="{{ '%02d'|format(month) }}">{{ '%02d'|format(month) }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 5px; color: #555; font-weight: 600;">Expiry Year</label>
+                            <select name="expiry_year" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px;">
+                                <option value="">Select Year</option>
+                                {% for year in range(2026, 2036) %}
+                                <option value="{{ year }}">{{ year }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 5px; color: #555; font-weight: 600;">CVV</label>
+                        <input type="text" name="cvv" placeholder="123" 
+                               style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Order Summary Sidebar -->
+        <div>
+            <div style="background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); position: sticky; top: 100px;">
+                <h3 style="margin-top: 0; margin-bottom: 20px; color: #333; border-bottom: 2px solid #dee2e6; padding-bottom: 15px;">Order Summary</h3>
+                
+                <!-- Cart Items -->
+                <div style="margin-bottom: 20px; max-height: 300px; overflow-y: auto; border-bottom: 1px solid #dee2e6; padding-bottom: 15px;">
+                    {% for item in cart.items %}
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 14px;">
+                        <div style="color: #666;">
+                            <div style="font-weight: 600; color: #333;">{{ item.product_name }}</div>
+                            <div style="color: #999;">Qty: {{ item.quantity }}</div>
+                        </div>
+                        <div style="font-weight: 600; color: #333;">₹{{ "%.2f"|format(item.get_subtotal()) }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Pricing Breakdown -->
+                <div style="margin-bottom: 15px; display: flex; justify-content: space-between; color: #666;">
+                    <span>Subtotal:</span>
+                    <span>₹{{ "%.2f"|format(cart.get_total()) }}</span>
+                </div>
+                
+                <div style="margin-bottom: 15px; display: flex; justify-content: space-between; color: #666;">
+                    <span>Shipping:</span>
+                    <span style="color: #28a745; font-weight: 600;">FREE</span>
+                </div>
+                
+                <div style="margin-bottom: 15px; display: flex; justify-content: space-between; color: #666;">
+                    <span>Tax:</span>
+                    <span>₹0.00</span>
+                </div>
+                
+                <div style="margin-bottom: 20px; padding-top: 15px; border-top: 2px solid #dee2e6; display: flex; justify-content: space-between; font-size: 18px; font-weight: 600; color: #333;">
+                    <span>Total:</span>
+                    <span>₹{{ "%.2f"|format(cart.get_total()) }}</span>
+                </div>
+                
+                <button type="submit" 
+                        style="width: 100%; padding: 15px; background: #28a745; color: white; border: none; border-radius: 5px; font-weight: 600; font-size: 16px; cursor: pointer; transition: background 0.2s;">
+                    ✓ Place Order
+                </button>
+                
+                <a href="{{ url_for('cart.view_cart') }}" 
+                   style="display: block; text-align: center; margin-top: 12px; padding: 12px; background: #f0f0f0; color: #333; text-decoration: none; border-radius: 5px; font-weight: 600; transition: background 0.2s;">
+                    ← Back to Cart
+                </a>
+                
+                <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid #8B4513;">
+                    <p style="margin: 0; font-size: 12px; color: #666;">
+                        <strong>✓ Secure checkout</strong> - Your payment is safe<br>
+                        <strong>✓ Order tracking</strong> - Get updates in real-time<br>
+                        <strong>✓ Easy returns</strong> - 30-day return policy
+                    </p>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+function toggleCardFields() {
+    const codRadio = document.querySelector('input[name="payment_method"][value="cod"]');
+    const cardRadio = document.querySelector('input[name="payment_method"][value="card"]');
+    const cardFields = document.getElementById('cardFields');
+    
+    cardRadio.addEventListener('change', function() {
+        if (this.checked) {
+            cardFields.style.display = 'block';
+        }
+    });
+    
+    codRadio.addEventListener('change', function() {
+        if (this.checked) {
+            cardFields.style.display = 'none';
+        }
+    });
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', toggleCardFields);
+</script>
+
+<style>
+    label:hover {
+        background: #f8f9fa;
+        border-color: #8B4513 !important;
+    }
+    
+    input[type="radio"]:checked + label,
+    label:has(input[type="radio"]:checked) {
+        border-color: #8B4513 !important;
+        background: #fff8f0 !important;
+    }
+    
+    @media (max-width: 768px) {
+        form {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
+{% endblock %}
