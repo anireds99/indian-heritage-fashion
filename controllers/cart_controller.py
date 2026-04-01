@@ -157,3 +157,68 @@ def order_success(order_id):
         return redirect(url_for('user.dashboard'))
     
     return render_template('cart/order_success.html', order=order)
+
+
+@cart_bp.route('/validate-coupon', methods=['POST'])
+@login_required
+def validate_coupon():
+    """Validate coupon code API endpoint."""
+    from services import DiscountService
+    
+    data = request.get_json()
+    coupon_code = data.get('coupon_code', '').strip()
+    cart_total = data.get('cart_total', 0)
+    
+    if not coupon_code:
+        return jsonify({
+            'success': False,
+            'message': 'Please enter a coupon code'
+        })
+    
+    if not cart_total or cart_total <= 0:
+        return jsonify({
+            'success': False,
+            'message': 'Invalid cart total'
+        })
+    
+    discount_service = DiscountService()
+    result = discount_service.validate_coupon(
+        coupon_code,
+        cart_total,
+        session['user_id']
+    )
+    
+    return jsonify(result)
+
+
+@cart_bp.route('/apply-coupon/<int:order_id>', methods=['POST'])
+@login_required
+def apply_coupon(order_id):
+    """Apply coupon to order."""
+    from services import DiscountService
+    from repositories import OrderRepository
+    
+    order = OrderRepository.find_by_id(order_id)
+    if not order or order.user_id != session['user_id']:
+        return jsonify({
+            'success': False,
+            'message': 'Order not found'
+        })
+    
+    data = request.get_json()
+    coupon_code = data.get('coupon_code', '').strip()
+    
+    if not coupon_code:
+        return jsonify({
+            'success': False,
+            'message': 'Please enter a coupon code'
+        })
+    
+    discount_service = DiscountService()
+    result = discount_service.apply_coupon_to_order(
+        coupon_code,
+        order,
+        session['user_id']
+    )
+    
+    return jsonify(result)

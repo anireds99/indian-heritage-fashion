@@ -411,3 +411,74 @@ class CheckoutService:
             'transaction_id': transaction_id,
             'message': 'Payment successful'
         }
+
+
+class DiscountService:
+    """Service for discount and coupon operations."""
+    
+    def __init__(self):
+        from repositories import CouponRepository
+        self.coupon_repo = CouponRepository()
+    
+    def validate_coupon(self, code: str, cart_total: float, user_id: int = None) -> Dict[str, Any]:
+        """Validate coupon code and calculate discount."""
+        if not code or not code.strip():
+            return {'success': False, 'message': 'Please enter a coupon code'}
+        
+        try:
+            validation_result = self.coupon_repo.validate_coupon(code.upper(), cart_total, user_id)
+            
+            if validation_result['valid']:
+                return {
+                    'success': True,
+                    'message': validation_result['message'],
+                    'coupon_code': code.upper(),
+                    'discount_amount': validation_result['discount_amount'],
+                    'final_amount': validation_result['final_amount'],
+                    'discount_type': validation_result['coupon']['discount_type'],
+                    'discount_value': validation_result['coupon']['discount_value']
+                }
+            else:
+                return {
+                    'success': False,
+                    'message': validation_result['message']
+                }
+        except Exception as e:
+            return {'success': False, 'message': f'Coupon validation failed: {str(e)}'}
+    
+    def apply_coupon_to_order(self, coupon_code: str, order: Order, user_id: int = None) -> Dict[str, Any]:
+        """Apply coupon to order and update amounts."""
+        try:
+            from repositories import CouponRepository
+            coupon_repo = CouponRepository()
+            coupon = coupon_repo.find_by_code(coupon_code.upper())
+            
+            if not coupon:
+                return {'success': False, 'message': 'Coupon not found'}
+            
+            if not coupon.can_use(user_id):
+                return {'success': False, 'message': 'Coupon cannot be used'}
+            
+            # Calculate discount
+            discount_amount = coupon.calculate_discount(order.total_amount)
+            
+            # Update order
+            order.subtotal_amount = order.total_amount
+            order.discount_amount = discount_amount
+            order.coupon_code = coupon_code.upper()
+            order.total_amount = order.total_amount - discount_amount
+            
+            # Mark coupon as used
+            coupon.use_coupon()
+            
+            db.session.commit()
+            
+            return {
+                'success': True,
+                'message': f'Coupon applied! You saved ₹{discount_amount:.2f}',
+                'discount_amount': discount_amount,
+                'final_amount': order.total_amount
+            }
+        except Exception as e:
+            db.session.rollback()
+            return {'success': False, 'message': f'Failed to apply coupon: {str(e)}'}

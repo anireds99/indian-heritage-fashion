@@ -316,3 +316,101 @@ class PaymentRepository:
             payment.completed_at = db.func.now()
         db.session.commit()
         return payment
+
+
+class CouponRepository:
+    """Repository for Coupon data access operations."""
+    
+    @staticmethod
+    def create(code: str, discount_type: str, discount_value: float, valid_until, **kwargs) -> 'Coupon':
+        """Create a new coupon."""
+        from models import Coupon
+        coupon = Coupon(
+            code=code,
+            discount_type=discount_type,
+            discount_value=discount_value,
+            valid_until=valid_until,
+            **kwargs
+        )
+        db.session.add(coupon)
+        db.session.commit()
+        return coupon
+    
+    @staticmethod
+    def find_by_code(code: str) -> 'Optional[Coupon]':
+        """Find coupon by code."""
+        from models import Coupon
+        return Coupon.query.filter_by(code=code.upper()).first()
+    
+    @staticmethod
+    def find_by_id(coupon_id: int) -> 'Optional[Coupon]':
+        """Find coupon by ID."""
+        from models import Coupon
+        return Coupon.query.get(coupon_id)
+    
+    @staticmethod
+    def find_all(active_only: bool = True):
+        """Get all coupons."""
+        from models import Coupon
+        query = Coupon.query
+        if active_only:
+            query = query.filter_by(is_active=True)
+        return query.all()
+    
+    @staticmethod
+    def find_paginated(page: int = 1, per_page: int = 20, active_only: bool = False):
+        """Get coupons with pagination."""
+        from models import Coupon
+        query = Coupon.query
+        if active_only:
+            query = query.filter_by(is_active=True)
+        return query.paginate(page=page, per_page=per_page, error_out=False)
+    
+    @staticmethod
+    def update(coupon: 'Coupon', **kwargs) -> 'Coupon':
+        """Update coupon information."""
+        for key, value in kwargs.items():
+            if hasattr(coupon, key):
+                setattr(coupon, key, value)
+        db.session.commit()
+        return coupon
+    
+    @staticmethod
+    def delete(coupon: 'Coupon') -> None:
+        """Delete a coupon."""
+        db.session.delete(coupon)
+        db.session.commit()
+    
+    @staticmethod
+    def validate_coupon(code: str, amount: float, user_id: int = None) -> dict:
+        """Validate coupon and return validation result."""
+        from models import Coupon
+        coupon = Coupon.query.filter_by(code=code.upper()).first()
+        
+        if not coupon:
+            return {'valid': False, 'message': 'Coupon code not found'}
+        
+        if not coupon.is_active:
+            return {'valid': False, 'message': 'Coupon code is inactive'}
+        
+        if not coupon.is_valid():
+            return {'valid': False, 'message': 'Coupon code has expired or reached usage limit'}
+        
+        if amount < coupon.min_purchase_amount:
+            return {
+                'valid': False,
+                'message': f'Minimum purchase amount of ₹{coupon.min_purchase_amount} required'
+            }
+        
+        if user_id and not coupon.can_use(user_id):
+            return {'valid': False, 'message': 'You have already used this coupon'}
+        
+        discount = coupon.calculate_discount(amount)
+        
+        return {
+            'valid': True,
+            'coupon': coupon.to_dict(),
+            'discount_amount': discount,
+            'final_amount': amount - discount,
+            'message': f'Coupon applied! You save ₹{discount:.2f}'
+        }
