@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }} - FashionBrand{% endblock %}
+
+{% block content %}
+<div style="background: #f5f5f5; min-height: 100vh; padding: 20px 0;">
+    <!-- Breadcrumb -->
+    <div style="background: white; padding: 15px 0; border-bottom: 1px solid #e0e0e0;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; font-size: 14px;">
+            <a href="{{ url_for('index') }}" style="color: #0066c0; text-decoration: none;">Home</a>
+            <span style="color: #666;"> / </span>
+            <a href="{{ url_for('shop') }}" style="color: #0066c0; text-decoration: none;">Shop</a>
+            <span style="color: #666;"> / </span>
+            <span style="color: #666;">{{ product.name }}</span>
+        </div>
+    </div>
+
+    <!-- Product Detail Container -->
+    <div style="background: white; margin-top: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 30px 20px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+                
+                <!-- Product Image Section -->
+                <div>
+                    <div style="background: #f9f9f9; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; text-align: center;">
+                        <img src="{{ product.image }}" alt="{{ product.name }}" 
+                             style="max-width: 100%; max-height: 500px; object-fit: contain; display: inline-block;"
+                             onerror="this.src='/static/images/placeholder.png';">
+                    </div>
+                    
+                    <!-- Color Options -->
+                    <div style="margin-top: 20px;">
+                        <h4 style="color: #333; font-size: 14px; font-weight: 600; margin-bottom: 10px;">Available Colors:</h4>
+                        <div style="display: flex; gap: 10px;">
+                            {% for color in product.colors %}
+                            <button style="padding: 8px 16px; border: 2px solid #ccc; background: white; border-radius: 4px; cursor: pointer; font-size: 13px; transition: all 0.2s;" onmouseover="this.style.borderColor='#0066c0'; this.style.color='#0066c0';" onmouseout="this.style.borderColor='#ccc'; this.style.color='#333';">
+                                {{ color }}
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Product Info Section -->
+                <div>
+                    <!-- Category Badge -->
+                    <div style="display: inline-block; background: #ffc658; color: #111; padding: 5px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; margin-bottom: 15px;">
+                        {{ product.category }}
+                    </div>
+
+                    <!-- Product Name -->
+                    <h1 style="font-size: 28px; font-weight: 700; color: #111; margin: 15px 0; line-height: 1.4;">
+                        {{ product.name }}
+                    </h1>
+
+                    <!-- Rating -->
+                    <div style="display: flex; align-items: center; gap: 10px; margin: 15px 0; padding-bottom: 15px; border-bottom: 1px solid #e0e0e0;">
+                        <div style="color: #ff9900; font-weight: 700;">★★★★☆</div>
+                        <span style="color: #0066c0; cursor: pointer; font-size: 14px;">{{ product.reviews }} Reviews</span>
+                    </div>
+
+                    <!-- Price Section -->
+                    <div style="margin: 20px 0;">
+                        <div style="font-size: 32px; color: #b12704; font-weight: 700;">
+                            ₹{{ product.price | int }}
+                        </div>
+                        <p style="color: #555; font-size: 13px; margin-top: 5px;">
+                            FREE Delivery on orders above ₹500
+                        </p>
+                    </div>
+
+                    <!-- Stock Status -->
+                    <div style="margin: 20px 0; padding: 10px; background: {% if product.stock > 0 %}#f0fdf4{% else %}#fef2f2{% endif %}; border-radius: 4px; border-left: 4px solid {% if product.stock > 0 %}#22c55e{% else %}#ef4444{% endif %};">
+                        {% if product.stock > 0 %}
+                        <p style="color: #22c55e; font-weight: 600; font-size: 14px;">✓ In Stock ({{ product.stock }} available)</p>
+                        {% else %}
+                        <p style="color: #ef4444; font-weight: 600; font-size: 14px;">Out of Stock</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Size Selection -->
+                    <div style="margin: 25px 0;">
+                        <h3 style="color: #333; font-size: 14px; font-weight: 600; margin-bottom: 10px;">Select Size:</h3>
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+                            {% for size in product.sizes %}
+                            <button style="padding: 10px; border: 1px solid #ccc; background: white; border-radius: 4px; cursor: pointer; font-weight: 500; transition: all 0.2s;" 
+                                    onmouseover="this.style.borderColor='#0066c0';" 
+                                    onmouseout="this.style.borderColor='#ccc';">
+                                {{ size }}
+                            </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Quantity Selection -->
+                    <div style="margin: 25px 0;">
+                        <h3 style="color: #333; font-size: 14px; font-weight: 600; margin-bottom: 10px;">Quantity:</h3>
+                        <input type="number" id="quantity" value="1" min="1" max="{{ product.stock }}" 
+                               style="width: 80px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px;">
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin: 30px 0;">
+                        <button onclick="addToCartProduct({{ product.id }}, '{{ product.name }}', {{ product.price }}, '{{ product.image }}')" 
+                                style="padding: 12px 20px; background: #ff9900; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s;"
+                                onmouseover="this.style.background='#e08806';"
+                                onmouseout="this.style.background='#ff9900';">
+                            🛒 Add to Cart
+                        </button>
+                        <button onclick="buyNowProduct({{ product.id }}, '{{ product.name }}', {{ product.price }}, '{{ product.image }}')" 
+                                style="padding: 12px 20px; background: #ffc658; color: #111; border: none; border-radius: 4px; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s;"
+                                onmouseover="this.style.background='#ffb700';"
+                                onmouseout="this.style.background='#ffc658';">
+                            💳 Buy Now
+                        </button>
+                    </div>
+
+                    <!-- Description -->
+                    <div style="margin-top: 30px; padding-top: 30px; border-top: 1px solid #e0e0e0;">
+                        <h3 style="color: #333; font-size: 16px; font-weight: 600; margin-bottom: 10px;">About this item</h3>
+                        <p style="color: #555; line-height: 1.6; font-size: 14px; margin-bottom: 15px;">
+                            {{ product.description }}
+                        </p>
+                    </div>
+
+                    <!-- Features List -->
+                    <div style="margin-top: 20px;">
+                        <h3 style="color: #333; font-size: 14px; font-weight: 600; margin-bottom: 10px;">Key Features:</h3>
+                        <ul style="list-style: none; padding: 0;">
+                            {% for feature in product.features %}
+                            <li style="padding: 8px 0; color: #555; font-size: 13px; display: flex; align-items: center;">
+                                <span style="color: #22c55e; font-size: 16px; margin-right: 10px;">✓</span>
+                                {{ feature }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <!-- Seller Info -->
+                    <div style="background: #f9f9f9; padding: 15px; border-radius: 4px; margin-top: 30px;">
+                        <h4 style="color: #333; font-size: 14px; font-weight: 600; margin-bottom: 10px;">Seller Information</h4>
+                        <p style="color: #555; font-size: 13px; margin: 5px 0;">
+                            <strong>Seller:</strong> FashionBrand India
+                        </p>
+                        <p style="color: #555; font-size: 13px; margin: 5px 0;">
+                            <strong>Fulfilled by:</strong> Amazon-style Logistics
+                        </p>
+                        <p style="color: #22c55e; font-size: 13px; margin: 5px 0; font-weight: 600;">
+                            ✓ 7 Days Replacement Guarantee
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products Section -->
+    <div style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
+        <h2 style="color: #111; font-size: 24px; font-weight: 700; margin-bottom: 20px;">Related Products</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
+            <!-- Related product cards would go here -->
+            <div style="text-align: center; color: #999; padding: 40px 20px; background: white; border-radius: 8px;">
+                More products coming soon...
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function addToCartProduct(productId, productName, price, image) {
+    const quantity = parseInt(document.getElementById('quantity').value) || 1;
+    
+    // Format image path
+    let imagePath = image;
+    if (image && !image.startsWith('/')) {
+        imagePath = '/static/' + image;
+    }
+    
+    fetch('/cart/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            product_id: productId,
+            product_name: productName,
+            price: price,
+            product_image: imagePath,
+            quantity: quantity,
+            size: 'M'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('✅ ' + quantity + 'x ' + productName + ' added to cart!');
+            setTimeout(() => {
+                window.location.href = '{{ url_for("cart.view_cart") }}';
+            }, 1000);
+        } else {
+            alert('❌ ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('❌ Failed to add item to cart');
+        console.error('Error:', error);
+    });
+}
+
+function buyNowProduct(productId, productName, price, image) {
+    const quantity = parseInt(document.getElementById('quantity').value) || 1;
+    
+    // Format image path
+    let imagePath = image;
+    if (image && !image.startsWith('/')) {
+        imagePath = '/static/' + image;
+    }
+    
+    fetch('/cart/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            product_id: productId,
+            product_name: productName,
+            price: price,
+            product_image: imagePath,
+            quantity: quantity,
+            size: 'M'
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            window.location.href = '{{ url_for("cart.checkout") }}';
+        } else {
+            alert('❌ ' + data.message);
+        }
+    })
+    .catch(error => {
+        alert('❌ Failed to proceed to checkout');
+        console.error('Error:', error);
+    });
+}
+</script>
+
+<style>
+    @media (max-width: 768px) {
+        div[style*="grid-template-columns: 1fr 1fr"] {
+            grid-template-columns: 1fr !important;
+        }
+        
+        h1 {
+            font-size: 22px !important;
+        }
+        
+        div[style*="grid-template-columns: repeat(4"] {
+            grid-template-columns: repeat(3, 1fr) !important;
+        }
+    }
+</style>
+{% endblock %}

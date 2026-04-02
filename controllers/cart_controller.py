@@ -222,3 +222,83 @@ def apply_coupon(order_id):
     )
     
     return jsonify(result)
+
+
+# Session 6 - Amazon-style Product Detail View
+@cart_bp.route('/product/<int:product_id>')
+def product_detail(product_id):
+    """View full product detail (Amazon style) - accessible from cart."""
+    # Sample product data - in production, fetch from database
+    products = {
+        1: {
+            'id': 1,
+            'name': 'Tanjore Temple Graphic Tee',
+            'price': 1299.99,
+            'image': '/static/images/mockups/tanjore.jpg',
+            'rating': 4.5,
+            'reviews': 128,
+            'description': 'Celebrate the artistic heritage of Tanjore with this beautifully crafted graphic tee. Featuring intricate temple designs inspired by the golden art form of Tanjore paintings.',
+            'features': [
+                '100% premium cotton fabric',
+                'High-quality print technology',
+                'Comfortable and breathable',
+                'Available in S, M, L, XL sizes',
+                'Machine washable',
+                'Made in India'
+            ],
+            'colors': ['Black', 'Navy Blue', 'White'],
+            'sizes': ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+            'stock': 15,
+            'category': 'Tees'
+        },
+        2: {
+            'id': 2,
+            'name': 'ISRO Space Missions Hoodie',
+            'price': 1999.99,
+            'image': '/static/images/mockups/isro_1st_rocket.jpg',
+            'rating': 4.8,
+            'reviews': 256,
+            'description': 'Inspired by India\'s incredible space journey with ISRO. This premium hoodie celebrates our achievements in space exploration with stunning graphic design.',
+            'features': [
+                '80% cotton, 20% polyester blend',
+                'Soft fleece interior',
+                'Double-stitched for durability',
+                'Front kangaroo pocket',
+                'Adjustable drawstring hood',
+                'Printed logo design'
+            ],
+            'colors': ['Black', 'Grey', 'Navy'],
+            'sizes': ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+            'stock': 8,
+            'category': 'Hoodies'
+        },
+        3: {
+            'id': 3,
+            'name': 'Hampi Ruins Heritage Tee',
+            'price': 1399.99,
+            'image': '/static/images/mockups/hampi_temple_tshirt.jpg',
+            'rating': 4.6,
+            'reviews': 89,
+            'description': 'Journey through the magnificent ruins of Hampi with this heritage-inspired graphic tee. Perfect for history enthusiasts and cultural fashion lovers.',
+            'features': [
+                '100% organic cotton',
+                'Eco-friendly printing process',
+                'Vintage-inspired design',
+                'Comfortable relaxed fit',
+                'Pre-shrunk fabric',
+                'Fair trade certified'
+            ],
+            'colors': ['Sand', 'Olive', 'Charcoal'],
+            'sizes': ['XS', 'S', 'M', 'L', 'XL', 'XXL'],
+            'stock': 12,
+            'category': 'Tees'
+        }
+    }
+    
+    product = products.get(product_id)
+    
+    if not product:
+        flash('Product not found', 'danger')
+        return redirect(url_for('shop'))
+    
+    return render_template('cart/product_detail.html', product=product)
