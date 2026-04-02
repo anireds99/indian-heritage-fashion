@@ -7,6 +7,11 @@ from flask import Flask, render_template, request, jsonify, session, redirect
 from datetime import datetime, timezone
 import os
 
+try:
+    from flask_compress import Compress
+except ImportError:
+    Compress = None
+
 # Import configuration
 from config import config
 
@@ -18,13 +23,30 @@ from controllers.auth_controller import auth_bp
 from controllers.user_controller import user_bp
 from controllers.admin_controller import admin_bp
 from controllers.cart_controller import cart_bp
+from controllers.cart_advanced_api import cart_advanced_bp
 
 # Create Flask app
 app = Flask(__name__)
 
+# Enable gzip compression for faster responses
+if Compress:
+    Compress(app)
+
 # Load configuration
 env = os.environ.get('FLASK_ENV', 'development')
 app.config.from_object(config[env])
+
+# Add cache headers for static files and pages
+@app.after_request
+def add_cache_headers(response):
+    """Add cache headers to responses for better performance."""
+    if request.path.startswith('/static/'):
+        response.cache_control.max_age = 2592000
+        response.cache_control.public = True
+    elif request.endpoint in ['home', 'shop', 'about', 'contact', 'indian_heritage', 'design_gallery']:
+        response.cache_control.max_age = 3600
+        response.cache_control.public = True
+    return response
 
 # Initialize database
 db.init_app(app)
@@ -34,17 +56,16 @@ db.init_app(app)
 def redirect_to_custom_domain():
     """Redirect indian-heritage-fashion.onrender.com to www.rootsfashion.in"""
     if env == 'production':
-        urlparts = request.url.split('/')
         if 'indian-heritage-fashion.onrender.com' in request.url:
-            # Replace old domain with new custom domain
             new_url = request.url.replace('indian-heritage-fashion.onrender.com', 'www.rootsfashion.in')
-            return redirect(new_url, code=301)  # 301 = Permanent redirect
+            return redirect(new_url, code=301)
 
 # Register blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(user_bp)
 app.register_blueprint(admin_bp)
 app.register_blueprint(cart_bp)
+app.register_blueprint(cart_advanced_bp)
 
 # Indian Heritage Fashion Products
 PRODUCTS = [

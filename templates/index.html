@@ -54,7 +54,12 @@
             <div class="product-card">
                 <div class="product-badge">{{ product.culture }}</div>
                 <div class="product-image">
-                    <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}" onerror="this.src='https://via.placeholder.com/400x500?text={{ product.name|urlencode }}'">
+                    <img 
+                        loading="lazy"
+                        src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 500'%3E%3Crect fill='%23f0f0f0' width='400' height='500'/%3E%3C/svg%3E"
+                        data-src="{{ url_for('static', filename='images/' + product.image) }}" 
+                        alt="{{ product.name }}"
+                    >
                     <div class="product-overlay">
                         <a href="/product/{{ product.id }}" class="btn btn-secondary">View Story</a>
                     </div>
@@ -62,7 +67,7 @@
                 <div class="product-info">
                     <h3>{{ product.name }}</h3>
                     <p class="product-category">{{ product.category|title }}</p>
-                    <p class="product-price">${{ "%.2f"|format(product.price) }}</p>
+                    <p class="product-price">₹{{ "%.0f"|format(product.price) }}</p>
                 </div>
             </div>
             {% endfor %}
@@ -78,12 +83,17 @@
         <h2 class="section-title">Cultures We Celebrate</h2>
         <div class="culture-grid">
             <div class="culture-card">
+                <div class="culture-icon">🇮🇳</div>
+                <h3>Indian Heritage</h3>
+                <p>Block printing, ikat, handloom</p>
+            </div>
+            <div class="culture-card">
                 <div class="culture-icon">🇯🇵</div>
                 <h3>Japanese</h3>
                 <p>Indigo dyeing, sashiko, kimono</p>
             </div>
             <div class="culture-card">
-                <div class="culture-icon">🇬🇭</div>
+                <div class="culture-icon">🇬��</div>
                 <h3>African</h3>
                 <p>Kente, mudcloth, adinkra</p>
             </div>
@@ -91,11 +101,6 @@
                 <div class="culture-icon">🇲🇽</div>
                 <h3>Mexican</h3>
                 <p>Embroidery, huipil, textiles</p>
-            </div>
-            <div class="culture-card">
-                <div class="culture-icon">🇮🇳</div>
-                <h3>Indian</h3>
-                <p>Block printing, ikat, handloom</p>
             </div>
             <div class="culture-card">
                 <div class="culture-icon">🇵🇪</div>
@@ -118,4 +123,26 @@
         <a href="/shop" class="btn btn-light">Start Your Journey</a>
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const images = document.querySelectorAll('img[data-src]');
+    
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.dataset.src;
+                    observer.unobserve(img);
+                }
+            });
+        });
+        
+        images.forEach(img => observer.observe(img));
+    } else {
+        images.forEach(img => img.src = img.dataset.src);
+    }
+});
+</script>
 {% endblock %}

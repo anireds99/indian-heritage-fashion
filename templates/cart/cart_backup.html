@@ -40,31 +40,26 @@
                                 <td style="padding: 20px;">
                                     <div style="display: flex; gap: 15px; align-items: center;">
                                         {% if item.product_image %}
-                                        <div style="position: relative; width: 80px; height: 80px; border-radius: 5px; overflow: hidden; background: #f0f0f0; display: flex; align-items: center; justify-content: center;">
-                                            <img src="{% if item.product_image.startswith('/') %}{{ item.product_image }}{% else %}/static/{{ item.product_image }}{% endif %}" 
-                                                 alt="{{ item.product_name }}" 
-                                                 style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;"
-                                                 class="cart-product-image"
-                                                 onerror="this.src='/static/images/placeholder.png';">
-                                        </div>
+                                        <img src="{{ item.product_image }}" alt="{{ item.product_name }}" 
+                                             style="width: 80px; height: 80px; object-fit: cover; border-radius: 5px;">
                                         {% else %}
-                                        <div style="width: 80px; height: 80px; background: #e9ecef; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #999; font-size: 12px; text-align: center; padding: 5px;">
+                                        <div style="width: 80px; height: 80px; background: #e9ecef; border-radius: 5px; display: flex; align-items: center; justify-content: center; color: #999;">
                                             No Image
                                         </div>
                                         {% endif %}
                                         <div>
-                                            <h4 style="margin: 0 0 5px 0; color: #333; font-size: 16px;">{{ item.product_name }}</h4>
-                                            <p style="margin: 0; color: #999; font-size: 13px;">Size: <strong>{{ item.size }}</strong></p>
+                                            <h4 style="margin: 0 0 5px 0; color: #333;">{{ item.product_name }}</h4>
+                                            <p style="margin: 0; color: #999; font-size: 14px;">Size: <strong>{{ item.size }}</strong></p>
                                         </div>
                                     </div>
                                 </td>
-                                <td style="padding: 20px; text-align: center; color: #333; font-weight: 600;">₹{{ "%.2f"|format(item.price) }}</td>
+                                <td style="padding: 20px; text-align: center; color: #333;">₹{{ "%.2f"|format(item.price) }}</td>
                                 <td style="padding: 20px; text-align: center;">
                                     <form method="POST" action="{{ url_for('cart.update_item', item_id=item.id) }}" 
                                           style="display: flex; gap: 8px; justify-content: center; align-items: center;">
                                         <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="10" 
-                                               style="width: 60px; padding: 8px; border: 1px solid #ddd; border-radius: 5px; text-align: center; font-size: 14px;">
-                                        <button type="submit" style="padding: 8px 12px; background: #8B4513; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: 600; transition: background 0.2s;" onmouseover="this.style.background='#6B3410'" onmouseout="this.style.background='#8B4513'">
+                                               style="width: 60px; padding: 8px; border: 1px solid #ddd; border-radius: 5px; text-align: center;">
+                                        <button type="submit" style="padding: 8px 12px; background: #8B4513; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;">
                                             Update
                                         </button>
                                     </form>
@@ -74,9 +69,7 @@
                                     <form method="POST" action="{{ url_for('cart.remove_item', item_id=item.id) }}" 
                                           style="display: inline;">
                                         <button type="submit" 
-                                                style="padding: 8px 12px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; font-weight: 600; transition: background 0.2s;"
-                                                onmouseover="this.style.background='#c82333'"
-                                                onmouseout="this.style.background='#dc3545'"
+                                                style="padding: 8px 12px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;"
                                                 onclick="return confirm('Remove this item from cart?');">
                                             Remove
                                         </button>
@@ -90,16 +83,12 @@
                 
                 <div style="margin-top: 30px; display: flex; gap: 15px;">
                     <a href="{{ url_for('shop') }}" 
-                       style="flex: 1; padding: 15px; background: #f0f0f0; color: #333; text-align: center; border-radius: 5px; text-decoration: none; font-weight: 600; transition: background 0.2s;"
-                       onmouseover="this.style.background='#e0e0e0'"
-                       onmouseout="this.style.background='#f0f0f0'">
+                       style="flex: 1; padding: 15px; background: #f0f0f0; color: #333; text-align: center; border-radius: 5px; text-decoration: none; font-weight: 600; transition: background 0.2s;">
                         ← Continue Shopping
                     </a>
                     <form method="POST" action="{{ url_for('cart.clear_cart') }}" style="flex: 1;">
                         <button type="submit" 
                                 style="width: 100%; padding: 15px; background: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; transition: background 0.2s;"
-                                onmouseover="this.style.background='#5a6268'"
-                                onmouseout="this.style.background='#6c757d'"
                                 onclick="return confirm('Clear entire cart?');">
                             Clear Cart
                         </button>
@@ -128,7 +117,7 @@
                     
                     <div style="margin-bottom: 20px; padding-top: 15px; border-top: 2px solid #dee2e6; display: flex; justify-content: space-between; font-size: 18px; font-weight: 600; color: #333;">
                         <span>Total:</span>
-                        <span style="color: #8B4513;">₹{{ "%.2f"|format(cart_total) }}</span>
+                        <span>₹{{ "%.2f"|format(cart_total) }}</span>
                     </div>
                     
                     <div style="margin-bottom: 15px;">
@@ -136,14 +125,12 @@
                     </div>
                     
                     <a href="{{ url_for('cart.checkout') }}" 
-                       style="display: block; width: 100%; padding: 15px; background: #8B4513; color: white; text-align: center; border-radius: 5px; text-decoration: none; font-weight: 600; font-size: 16px; transition: background 0.2s; border: none; cursor: pointer;"
-                       onmouseover="this.style.background='#6B3410'"
-                       onmouseout="this.style.background='#8B4513'">
+                       style="display: block; width: 100%; padding: 15px; background: #8B4513; color: white; text-align: center; border-radius: 5px; text-decoration: none; font-weight: 600; font-size: 16px; transition: background 0.2s; border: none; cursor: pointer;">
                         Proceed to Checkout →
                     </a>
                     
                     <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 5px; border-left: 4px solid #8B4513;">
-                        <p style="margin: 0; font-size: 13px; color: #666; line-height: 1.6;">
+                        <p style="margin: 0; font-size: 13px; color: #666;">
                             <strong>✓ Free shipping</strong> on all orders within India<br>
                             <strong>✓ Easy returns</strong> within 30 days<br>
                             <strong>✓ Secure checkout</strong> with multiple payment options
@@ -158,9 +145,7 @@
             <h2 style="color: #333; margin-bottom: 10px;">Your cart is empty</h2>
             <p style="color: #999; margin-bottom: 30px; font-size: 16px;">Add some amazing heritage fashion pieces to get started!</p>
             <a href="{{ url_for('shop') }}" 
-               style="display: inline-block; padding: 15px 40px; background: #8B4513; color: white; text-decoration: none; border-radius: 5px; font-weight: 600; font-size: 16px; transition: background 0.2s;"
-               onmouseover="this.style.background='#6B3410'"
-               onmouseout="this.style.background='#8B4513'">
+               style="display: inline-block; padding: 15px 40px; background: #8B4513; color: white; text-decoration: none; border-radius: 5px; font-weight: 600; font-size: 16px; transition: background 0.2s;">
                 Start Shopping
             </a>
         </div>
@@ -170,10 +155,6 @@
 <style>
     tr:hover {
         background: #f8f9fa !important;
-    }
-    
-    .cart-product-image:hover {
-        transform: scale(1.05);
     }
     
     @media (max-width: 768px) {

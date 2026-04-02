@@ -82,27 +82,17 @@ document.querySelector('.mobile-menu-toggle')?.addEventListener('click', () => {
     navMenu.style.display = navMenu.style.display === 'flex' ? 'none' : 'flex';
 });
 
-// Format image path utility function - FIXED FOR SESSION 5
-function formatImagePath(imagePath) {
-    if (!imagePath) return '/static/images/placeholder.png';
-    
-    // If path already starts with /, return as is
-    if (imagePath.startsWith('/')) return imagePath;
-    
-    // If path doesn't start with /static/, prepend it
-    if (!imagePath.startsWith('static/')) {
-        return '/static/' + imagePath;
-    }
-    
-    // If already has static/ but no leading /, add it
-    return '/' + imagePath;
+// Utility function to format image paths
+function formatImagePath(image) {
+    if (!image) return '/static/images/placeholder.png';
+    if (image.startsWith('/')) return image;
+    if (image.startsWith('http')) return image;
+    // Add /static/images/ prefix if not already present
+    return '/static/images/' + image;
 }
 
-// Add to Cart functionality - FIXED FOR SESSION 5
+// Add to Cart functionality
 async function addToCart(productId, productName, price, image) {
-    // Format image path properly
-    const imagePath = formatImagePath(image);
-    
     try {
         const response = await fetch('/cart/add', {
             method: 'POST',
@@ -113,7 +103,7 @@ async function addToCart(productId, productName, price, image) {
                 product_id: productId,
                 product_name: productName,
                 price: price,
-                product_image: imagePath,
+                product_image: formatImagePath(image),
                 quantity: 1,
                 size: 'M'
             })
@@ -122,10 +112,7 @@ async function addToCart(productId, productName, price, image) {
         const data = await response.json();
         
         if (data.success) {
-            // Update cart badge
             updateCartBadge(data.cart_count);
-            
-            // Show success message
             showNotification('✅ ' + productName + ' added to cart!', 'success');
         } else {
             showNotification('❌ ' + data.message, 'error');
@@ -136,7 +123,7 @@ async function addToCart(productId, productName, price, image) {
     }
 }
 
-// Add to Cart with custom quantity - FIXED FOR SESSION 5
+// Add to Cart with custom quantity
 async function addToCartWithQty(productId, productName, price, image, qtyInputId) {
     const qtyInput = document.getElementById(qtyInputId);
     const quantity = parseInt(qtyInput.value) || 1;
@@ -151,9 +138,6 @@ async function addToCartWithQty(productId, productName, price, image, qtyInputId
         return;
     }
     
-    // Format image path properly
-    const imagePath = formatImagePath(image);
-    
     try {
         const response = await fetch('/cart/add', {
             method: 'POST',
@@ -164,7 +148,7 @@ async function addToCartWithQty(productId, productName, price, image, qtyInputId
                 product_id: productId,
                 product_name: productName,
                 price: price,
-                product_image: imagePath,
+                product_image: formatImagePath(image),
                 quantity: quantity,
                 size: 'M'
             })
@@ -173,17 +157,14 @@ async function addToCartWithQty(productId, productName, price, image, qtyInputId
         const data = await response.json();
         
         if (data.success) {
-            // Update cart badge
             updateCartBadge(data.cart_count);
             
-            // Show success message with quantity
             if (quantity === 1) {
                 showNotification('✅ ' + productName + ' added to cart!', 'success');
             } else {
                 showNotification('✅ ' + quantity + 'x ' + productName + ' added to cart!', 'success');
             }
             
-            // Reset quantity to 1
             qtyInput.value = 1;
         } else {
             showNotification('❌ ' + data.message, 'error');
@@ -222,13 +203,11 @@ async function loadCartCount() {
 
 // Show notification toast
 function showNotification(message, type = 'info') {
-    // Remove existing notification
     const existing = document.querySelector('.notification-toast');
     if (existing) {
         existing.remove();
     }
     
-    // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification-toast ${type}`;
     notification.textContent = message;
@@ -248,7 +227,6 @@ function showNotification(message, type = 'info') {
     
     document.body.appendChild(notification);
     
-    // Remove after 3 seconds
     setTimeout(() => {
         notification.style.animation = 'slideOut 0.3s ease-out';
         setTimeout(() => notification.remove(), 300);
@@ -273,7 +251,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Image lazy loading - IMPROVED FOR SESSION 5
+// Image lazy loading
 if ('IntersectionObserver' in window) {
     const imageObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
@@ -281,13 +259,6 @@ if ('IntersectionObserver' in window) {
                 const img = entry.target;
                 img.src = img.dataset.src || img.src;
                 img.classList.add('loaded');
-                
-                // Add error handling for broken images
-                img.onerror = function() {
-                    this.src = '/static/images/placeholder.png';
-                    this.style.background = '#e9ecef';
-                };
-                
                 imageObserver.unobserve(img);
             }
         });
@@ -321,21 +292,7 @@ style.textContent = `
             opacity: 0;
         }
     }
-    
-    /* Image loading styles - SESSION 5 */
-    img.loaded {
-        animation: fadeIn 0.3s ease-in;
-    }
-    
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
 `;
 document.head.appendChild(style);
 
-console.log('🎨 ROOTS Fashion Website - Loaded Successfully (Session 5 - Image Fix Applied)');
+console.log('ROOTS Fashion Website - Loaded Successfully');

@@ -82,27 +82,8 @@ document.querySelector('.mobile-menu-toggle')?.addEventListener('click', () => {
     navMenu.style.display = navMenu.style.display === 'flex' ? 'none' : 'flex';
 });
 
-// Format image path utility function - FIXED FOR SESSION 5
-function formatImagePath(imagePath) {
-    if (!imagePath) return '/static/images/placeholder.png';
-    
-    // If path already starts with /, return as is
-    if (imagePath.startsWith('/')) return imagePath;
-    
-    // If path doesn't start with /static/, prepend it
-    if (!imagePath.startsWith('static/')) {
-        return '/static/' + imagePath;
-    }
-    
-    // If already has static/ but no leading /, add it
-    return '/' + imagePath;
-}
-
-// Add to Cart functionality - FIXED FOR SESSION 5
+// Add to Cart functionality
 async function addToCart(productId, productName, price, image) {
-    // Format image path properly
-    const imagePath = formatImagePath(image);
-    
     try {
         const response = await fetch('/cart/add', {
             method: 'POST',
@@ -113,7 +94,7 @@ async function addToCart(productId, productName, price, image) {
                 product_id: productId,
                 product_name: productName,
                 price: price,
-                product_image: imagePath,
+                product_image: image,
                 quantity: 1,
                 size: 'M'
             })
@@ -136,7 +117,7 @@ async function addToCart(productId, productName, price, image) {
     }
 }
 
-// Add to Cart with custom quantity - FIXED FOR SESSION 5
+// Add to Cart with custom quantity
 async function addToCartWithQty(productId, productName, price, image, qtyInputId) {
     const qtyInput = document.getElementById(qtyInputId);
     const quantity = parseInt(qtyInput.value) || 1;
@@ -151,9 +132,6 @@ async function addToCartWithQty(productId, productName, price, image, qtyInputId
         return;
     }
     
-    // Format image path properly
-    const imagePath = formatImagePath(image);
-    
     try {
         const response = await fetch('/cart/add', {
             method: 'POST',
@@ -164,7 +142,7 @@ async function addToCartWithQty(productId, productName, price, image, qtyInputId
                 product_id: productId,
                 product_name: productName,
                 price: price,
-                product_image: imagePath,
+                product_image: image,
                 quantity: quantity,
                 size: 'M'
             })
@@ -273,7 +251,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Image lazy loading - IMPROVED FOR SESSION 5
+// Image lazy loading
 if ('IntersectionObserver' in window) {
     const imageObserver = new IntersectionObserver((entries, observer) => {
         entries.forEach(entry => {
@@ -281,13 +259,6 @@ if ('IntersectionObserver' in window) {
                 const img = entry.target;
                 img.src = img.dataset.src || img.src;
                 img.classList.add('loaded');
-                
-                // Add error handling for broken images
-                img.onerror = function() {
-                    this.src = '/static/images/placeholder.png';
-                    this.style.background = '#e9ecef';
-                };
-                
                 imageObserver.unobserve(img);
             }
         });
@@ -321,21 +292,7 @@ style.textContent = `
             opacity: 0;
         }
     }
-    
-    /* Image loading styles - SESSION 5 */
-    img.loaded {
-        animation: fadeIn 0.3s ease-in;
-    }
-    
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
 `;
 document.head.appendChild(style);
 
-console.log('🎨 ROOTS Fashion Website - Loaded Successfully (Session 5 - Image Fix Applied)');
+console.log('ROOTS Fashion Website - Loaded Successfully');
