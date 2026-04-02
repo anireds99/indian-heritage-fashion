@@ -286,13 +286,23 @@ def inject_now():
 @app.context_processor
 def inject_user():
     """Inject current user into templates."""
-    user_info = {
-        'is_authenticated': 'user_id' in session,
-        'is_admin': 'admin_id' in session,
-        'username': session.get('username') or session.get('admin_username'),
-        'user_id': session.get('user_id'),
-        'admin_id': session.get('admin_id')
-    }
+    try:
+        user_info = {
+            'is_authenticated': 'user_id' in session,
+            'is_admin': 'admin_id' in session,
+            'username': session.get('username') or session.get('admin_username'),
+            'user_id': session.get('user_id'),
+            'admin_id': session.get('admin_id')
+        }
+    except RuntimeError:
+        # No request context available
+        user_info = {
+            'is_authenticated': False,
+            'is_admin': False,
+            'username': None,
+            'user_id': None,
+            'admin_id': None
+        }
     return {'current_user': user_info}
 
 # Database initialization

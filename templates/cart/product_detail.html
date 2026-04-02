@@ -7,9 +7,9 @@
     <!-- Breadcrumb -->
     <div style="background: white; padding: 15px 0; border-bottom: 1px solid #e0e0e0;">
         <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px; font-size: 14px;">
-            <a href="{{ url_for('index') }}" style="color: #0066c0; text-decoration: none;">Home</a>
+            <a href="/" style="color: #0066c0; text-decoration: none;">Home</a>
             <span style="color: #666;"> / </span>
-            <a href="{{ url_for('shop') }}" style="color: #0066c0; text-decoration: none;">Shop</a>
+            <a href="/shop" style="color: #0066c0; text-decoration: none;">Shop</a>
             <span style="color: #666;"> / </span>
             <span style="color: #666;">{{ product.name }}</span>
         </div>
@@ -143,7 +143,7 @@
                             <strong>Seller:</strong> FashionBrand India
                         </p>
                         <p style="color: #555; font-size: 13px; margin: 5px 0;">
-                            <strong>Fulfilled by:</strong> Amazon-style Logistics
+                            <strong>Fulfilled by:</strong> FashionBrand Logistics
                         </p>
                         <p style="color: #22c55e; font-size: 13px; margin: 5px 0; font-weight: 600;">
                             ✓ 7 Days Replacement Guarantee
@@ -158,7 +158,6 @@
     <div style="max-width: 1200px; margin: 40px auto; padding: 0 20px;">
         <h2 style="color: #111; font-size: 24px; font-weight: 700; margin-bottom: 20px;">Related Products</h2>
         <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;">
-            <!-- Related product cards would go here -->
             <div style="text-align: center; color: #999; padding: 40px 20px; background: white; border-radius: 8px;">
                 More products coming soon...
             </div>
@@ -170,7 +169,6 @@
 function addToCartProduct(productId, productName, price, image) {
     const quantity = parseInt(document.getElementById('quantity').value) || 1;
     
-    // Format image path
     let imagePath = image;
     if (image && !image.startsWith('/')) {
         imagePath = '/static/' + image;
@@ -195,7 +193,7 @@ function addToCartProduct(productId, productName, price, image) {
         if (data.success) {
             alert('✅ ' + quantity + 'x ' + productName + ' added to cart!');
             setTimeout(() => {
-                window.location.href = '{{ url_for("cart.view_cart") }}';
+                window.location.href = '/cart';
             }, 1000);
         } else {
             alert('❌ ' + data.message);
@@ -210,7 +208,6 @@ function addToCartProduct(productId, productName, price, image) {
 function buyNowProduct(productId, productName, price, image) {
     const quantity = parseInt(document.getElementById('quantity').value) || 1;
     
-    // Format image path
     let imagePath = image;
     if (image && !image.startsWith('/')) {
         imagePath = '/static/' + image;
@@ -233,7 +230,7 @@ function buyNowProduct(productId, productName, price, image) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            window.location.href = '{{ url_for("cart.checkout") }}';
+            window.location.href = '/cart/checkout';
         } else {
             alert('❌ ' + data.message);
         }

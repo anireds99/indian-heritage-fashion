@@ -340,3 +340,79 @@ class Coupon(db.Model):
     
     def __repr__(self):
         return f'<Coupon {self.code}>'
+
+
+class PasswordResetToken(db.Model):
+    """Password reset token model for secure password recovery."""
+    
+    __tablename__ = 'password_reset_tokens'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    token = db.Column(db.String(255), unique=True, nullable=False, index=True)
+    
+    is_used = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+    expires_at = db.Column(db.DateTime, nullable=False)
+    used_at = db.Column(db.DateTime)
+    
+    user = db.relationship('User', backref='password_reset_tokens')
+    
+    def is_valid(self) -> bool:
+        """Check if token is valid (not expired, not used)."""
+        now = datetime.now(timezone.utc)
+        return not self.is_used and now <= self.expires_at
+    
+    def mark_as_used(self) -> None:
+        """Mark token as used."""
+        self.is_used = True
+        self.used_at = datetime.now(timezone.utc)
+        db.session.commit()
+    
+    def __repr__(self):
+        return f'<PasswordResetToken {self.user_id}>'
+
+
+class LoginHistory(db.Model):
+    """Login history model for tracking user login attempts and patterns."""
+    
+    __tablename__ = 'login_history'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
+    
+    ip_address = db.Column(db.String(45))
+    user_agent = db.Column(db.String(500))
+    device_info = db.Column(db.String(200))
+    
+    login_status = db.Column(db.String(20), default='success')
+    failure_reason = db.Column(db.String(200))
+    
+    login_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), index=True)
+    logout_at = db.Column(db.DateTime)
+    session_duration = db.Column(db.Integer)
+    
+    user = db.relationship('User', backref='login_history')
+    
+    def end_session(self) -> None:
+        """Mark logout and calculate session duration."""
+        self.logout_at = datetime.now(timezone.utc)
+        if self.login_at:
+            duration = (self.logout_at - self.login_at).total_seconds()
+            self.session_duration = int(duration)
+        db.session.commit()
+    
+    def to_dict(self) -> dict:
+        """Convert to dictionary."""
+        return {
+            'id': self.id,
+            'login_at': self.login_at.isoformat() if self.login_at else None,
+            'logout_at': self.logout_at.isoformat() if self.logout_at else None,
+            'ip_address': self.ip_address,
+            'device_info': self.device_info,
+            'login_status': self.login_status,
+            'session_duration': self.session_duration
+        }
+    
+    def __repr__(self):
+        return f'<LoginHistory {self.user_id} - {self.login_at}>'

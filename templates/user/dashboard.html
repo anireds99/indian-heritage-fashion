@@ -1,135 +1,179 @@
 {% extends "base.html" %}
 
-{% block title %}My Dashboard - Indian Heritage Fashion{% endblock %}
+{% block title %}My Dashboard - FashionBrand{% endblock %}
 
 {% block content %}
-<div class="page-header" style="padding: 3rem 0;">
-    <div class="container">
-        <h1>Welcome, {{ user.username }}! 👋</h1>
-        <p>Manage your account, orders, and preferences</p>
-    </div>
-</div>
-
-<div class="container" style="padding: 4rem 0;">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            {% for category, message in messages %}
-                <div class="alert alert-{{ category }}" style="padding: 15px; margin-bottom: 20px; border-radius: 5px; background: {% if category == 'success' %}#d4edda{% elif category == 'danger' %}#f8d7da{% else %}#fff3cd{% endif %}; color: {% if category == 'success' %}#155724{% elif category == 'danger' %}#721c24{% else %}#856404{% endif %};">
-                    {{ message }}
-                </div>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-bottom: 3rem;">
-        <!-- Profile Card -->
-        <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                <i class="fas fa-user-circle" style="font-size: 3rem; color: #e63946;"></i>
-                <div>
-                    <h3 style="margin: 0; font-size: 1.2rem;">Profile</h3>
-                    <p style="margin: 0; color: #8d99ae; font-size: 0.9rem;">Manage your details</p>
-                </div>
-            </div>
-            <a href="{{ url_for('user.profile') }}" class="btn btn-primary" style="display: block; text-align: center; padding: 0.8rem;">View Profile</a>
-        </div>
-
-        <!-- Orders Card -->
-        <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                <i class="fas fa-shopping-cart" style="font-size: 3rem; color: #f4a261;"></i>
-                <div>
-                    <h3 style="margin: 0; font-size: 1.2rem;">Orders</h3>
-                    <p style="margin: 0; color: #8d99ae; font-size: 0.9rem;">{{ orders|length }} recent orders</p>
-                </div>
-            </div>
-            <a href="{{ url_for('user.orders') }}" class="btn btn-primary" style="display: block; text-align: center; padding: 0.8rem;">View Orders</a>
-        </div>
-
-        <!-- Addresses Card -->
-        <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                <i class="fas fa-map-marker-alt" style="font-size: 3rem; color: #2a9d8f;"></i>
-                <div>
-                    <h3 style="margin: 0; font-size: 1.2rem;">Addresses</h3>
-                    <p style="margin: 0; color: #8d99ae; font-size: 0.9rem;">{{ addresses|length }} saved addresses</p>
-                </div>
-            </div>
-            <a href="{{ url_for('user.addresses') }}" class="btn btn-primary" style="display: block; text-align: center; padding: 0.8rem;">Manage Addresses</a>
-        </div>
-    </div>
-
-    <!-- Recent Orders Section -->
-    <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 2rem;">
-        <h2 style="margin-bottom: 1.5rem;">Recent Orders</h2>
+<div style="background: #f5f5f5; min-height: 100vh; padding: 40px 20px;">
+    <div style="max-width: 1200px; margin: 0 auto;">
         
-        {% if orders %}
-            <div style="overflow-x: auto;">
-                <table style="width: 100%; border-collapse: collapse;">
-                    <thead>
-                        <tr style="border-bottom: 2px solid #edf2f4;">
-                            <th style="padding: 1rem; text-align: left;">Order #</th>
-                            <th style="padding: 1rem; text-align: left;">Date</th>
-                            <th style="padding: 1rem; text-align: left;">Status</th>
-                            <th style="padding: 1rem; text-align: right;">Amount</th>
-                            <th style="padding: 1rem; text-align: center;">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for order in orders %}
-                        <tr style="border-bottom: 1px solid #edf2f4;">
-                            <td style="padding: 1rem;">{{ order.order_number }}</td>
-                            <td style="padding: 1rem;">{{ order.created_at.strftime('%B %d, %Y') }}</td>
-                            <td style="padding: 1rem;">
-                                <span style="padding: 0.4rem 0.8rem; border-radius: 20px; font-size: 0.85rem; font-weight: 600; 
-                                    {% if order.status == 'delivered' %}background: #d4edda; color: #155724;
-                                    {% elif order.status == 'shipped' %}background: #d1ecf1; color: #0c5460;
-                                    {% elif order.status == 'confirmed' %}background: #fff3cd; color: #856404;
-                                    {% else %}background: #f8d7da; color: #721c24;{% endif %}">
-                                    {{ order.status|capitalize }}
-                                </span>
-                            </td>
-                            <td style="padding: 1rem; text-align: right; font-weight: bold;">₹{{ order.total_amount }}</td>
-                            <td style="padding: 1rem; text-align: center;">
-                                <a href="{{ url_for('user.order_detail', order_id=order.id) }}" style="color: #e63946; text-decoration: none;">View Details</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+        <!-- Header -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px; flex-wrap: wrap; gap: 20px;">
+            <div>
+                <h1 style="color: #111; font-size: 32px; font-weight: 700; margin: 0;">Welcome back, {{ session.get('username', 'Guest') }}! 👋</h1>
+                <p style="color: #666; margin: 8px 0 0 0;">Manage your account, orders, and preferences</p>
             </div>
-        {% else %}
-            <div style="text-align: center; padding: 3rem; color: #8d99ae;">
-                <i class="fas fa-shopping-bag" style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.3;"></i>
-                <p style="font-size: 1.2rem;">No orders yet</p>
-                <a href="{{ url_for('shop') }}" class="btn btn-primary" style="margin-top: 1rem;">Start Shopping</a>
-            </div>
-        {% endif %}
-    </div>
+            <a href="{{ url_for('auth.logout') }}" 
+               style="padding: 12px 24px; background: #ef4444; color: white; text-decoration: none; border-radius: 6px; font-weight: 600; transition: all 0.3s;"
+               onmouseover="this.style.backgroundColor='#dc2626'"
+               onmouseout="this.style.backgroundColor='#ef4444'">
+                Logout
+            </a>
+        </div>
 
-    <!-- Account Information -->
-    <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
-        <h2 style="margin-bottom: 1.5rem;">Account Information</h2>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem;">
-            <div>
-                <p style="color: #8d99ae; margin-bottom: 0.3rem; font-size: 0.9rem;">Email</p>
-                <p style="font-weight: 600;">{{ user.email }}</p>
+        <!-- Alert Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div style="padding: 16px 20px; margin-bottom: 20px; border-radius: 8px; background: {% if category == 'success' %}#d4edda{% elif category == 'danger' %}#f8d7da{% else %}#d1ecf1{% endif %}; border-left: 4px solid {% if category == 'success' %}#28a745{% elif category == 'danger' %}#dc3545{% else %}#17a2b8{% endif %}; color: {% if category == 'success' %}#155724{% elif category == 'danger' %}#721c24{% else %}#0c5460{% endif %};">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Dashboard Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 40px;">
+            
+            <!-- Quick Stats -->
+            <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h3 style="color: #667eea; font-size: 14px; font-weight: 600; text-transform: uppercase; margin: 0 0 20px 0;">Quick Stats</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <p style="color: #999; font-size: 12px; margin: 0; text-transform: uppercase;">Total Orders</p>
+                        <p style="color: #111; font-size: 28px; font-weight: 700; margin: 8px 0 0 0;" id="total-orders">-</p>
+                    </div>
+                    <div>
+                        <p style="color: #999; font-size: 12px; margin: 0; text-transform: uppercase;">Total Spent</p>
+                        <p style="color: #111; font-size: 28px; font-weight: 700; margin: 8px 0 0 0;" id="total-spent">₹0</p>
+                    </div>
+                </div>
             </div>
-            <div>
-                <p style="color: #8d99ae; margin-bottom: 0.3rem; font-size: 0.9rem;">Username</p>
-                <p style="font-weight: 600;">{{ user.username }}</p>
+
+            <!-- Account Info -->
+            <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h3 style="color: #667eea; font-size: 14px; font-weight: 600; text-transform: uppercase; margin: 0 0 20px 0;">Account Information</h3>
+                <div style="space-y: 12px;">
+                    <p style="color: #666; margin: 0 0 12px 0;"><strong>Email:</strong> {{ session.get('user_email', '-') }}</p>
+                    <p style="color: #666; margin: 0;"><strong>Username:</strong> {{ session.get('username', '-') }}</p>
+                </div>
+                <div style="margin-top: 20px; display: flex; gap: 10px;">
+                    <a href="{{ url_for('user.edit_profile') }}" 
+                       style="flex: 1; padding: 10px; background: #667eea; color: white; text-align: center; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600; transition: all 0.3s;"
+                       onmouseover="this.style.backgroundColor='#5568d3'"
+                       onmouseout="this.style.backgroundColor='#667eea'">
+                        Edit Profile
+                    </a>
+                </div>
             </div>
-            <div>
-                <p style="color: #8d99ae; margin-bottom: 0.3rem; font-size: 0.9rem;">Member Since</p>
-                <p style="font-weight: 600;">{{ user.created_at.strftime('%B %Y') }}</p>
+
+            <!-- Security -->
+            <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                <h3 style="color: #667eea; font-size: 14px; font-weight: 600; text-transform: uppercase; margin: 0 0 20px 0;">🔒 Security</h3>
+                <p style="color: #666; font-size: 14px; margin: 0 0 15px 0;">Keep your account secure</p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="{{ url_for('user.change_password') }}" 
+                       style="padding: 10px; background: #f0f0f0; color: #333; text-align: center; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600; transition: all 0.3s;"
+                       onmouseover="this.style.backgroundColor='#e0e0e0'"
+                       onmouseout="this.style.backgroundColor='#f0f0f0'">
+                        Change Password
+                    </a>
+                    <a href="#login-history" 
+                       style="padding: 10px; background: #f0f0f0; color: #333; text-align: center; text-decoration: none; border-radius: 6px; font-size: 14px; font-weight: 600; transition: all 0.3s;"
+                       onmouseover="this.style.backgroundColor='#e0e0e0'"
+                       onmouseout="this.style.backgroundColor='#f0f0f0'">
+                        View Login History
+                    </a>
+                </div>
             </div>
-            <div>
-                <p style="color: #8d99ae; margin-bottom: 0.3rem; font-size: 0.9rem;">Account Status</p>
-                <p style="font-weight: 600; color: {% if user.is_active %}#2a9d8f{% else %}#e63946{% endif %};">
-                    {% if user.is_active %}Active{% else %}Inactive{% endif %}
-                </p>
+        </div>
+
+        <!-- Recent Orders Section -->
+        <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 40px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="color: #111; font-size: 20px; font-weight: 700; margin: 0;">Recent Orders</h3>
+                <a href="{{ url_for('user.my_orders') }}" style="color: #667eea; text-decoration: none; font-weight: 600;">View All →</a>
             </div>
+            <div id="recent-orders" style="color: #999; text-align: center; padding: 40px 20px;">Loading orders...</div>
+        </div>
+
+        <!-- Login History Section -->
+        <div id="login-history" style="background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <h3 style="color: #111; font-size: 20px; font-weight: 700; margin: 0 0 20px 0;">Login History</h3>
+            <p style="color: #666; font-size: 14px; margin: 0 0 20px 0;">Recent login activity on your account. <a href="{{ url_for('user.security_settings') }}" style="color: #667eea; text-decoration: none;">Manage security settings</a>.</p>
+            <div id="login-history-content" style="color: #999; text-align: center; padding: 40px 20px;">Loading login history...</div>
         </div>
     </div>
 </div>
+
+<script>
+// Load login history via API
+async function loadLoginHistory() {
+    try {
+        const response = await fetch('{{ url_for("auth.api_login_history") }}?limit=10');
+        const data = await response.json();
+        
+        if (data.success && data.history.length > 0) {
+            let historyHTML = `
+                <div style="overflow-x: auto;">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="border-bottom: 2px solid #e0e0e0;">
+                                <th style="text-align: left; padding: 12px; color: #666; font-weight: 600; font-size: 14px;">Date & Time</th>
+                                <th style="text-align: left; padding: 12px; color: #666; font-weight: 600; font-size: 14px;">Device</th>
+                                <th style="text-align: left; padding: 12px; color: #666; font-weight: 600; font-size: 14px;">IP Address</th>
+                                <th style="text-align: left; padding: 12px; color: #666; font-weight: 600; font-size: 14px;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            data.history.forEach(record => {
+                const loginTime = new Date(record.login_at).toLocaleString();
+                const statusColor = record.login_status === 'success' ? '#22c55e' : '#ef4444';
+                const statusLabel = record.login_status === 'success' ? '✓ Success' : '✗ Failed';
+                
+                historyHTML += `
+                    <tr style="border-bottom: 1px solid #f0f0f0;">
+                        <td style="padding: 12px; color: #333;">${loginTime}</td>
+                        <td style="padding: 12px; color: #666;">${record.device_info}</td>
+                        <td style="padding: 12px; color: #666; font-family: monospace;">${record.ip_address}</td>
+                        <td style="padding: 12px;">
+                            <span style="color: ${statusColor}; font-weight: 600;">${statusLabel}</span>
+                        </td>
+                    </tr>
+                `;
+            });
+            
+            historyHTML += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            document.getElementById('login-history-content').innerHTML = historyHTML;
+        } else {
+            document.getElementById('login-history-content').innerHTML = '<p style="color: #999;">No login history available</p>';
+        }
+    } catch (error) {
+        console.error('Error loading login history:', error);
+        document.getElementById('login-history-content').innerHTML = '<p style="color: #ef4444;">Error loading login history</p>';
+    }
+}
+
+// Load recent orders (placeholder)
+function loadRecentOrders() {
+    document.getElementById('recent-orders').innerHTML = `
+        <div style="text-align: center;">
+            <p style="color: #999; margin: 0;">No orders yet</p>
+            <a href="{{ url_for('shop') }}" style="color: #667eea; text-decoration: none; font-weight: 600;">Start shopping →</a>
+        </div>
+    `;
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadLoginHistory();
+    loadRecentOrders();
+});
+</script>
 {% endblock %}
